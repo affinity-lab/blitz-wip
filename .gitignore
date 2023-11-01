@@ -1,0 +1,16 @@
+var/**/*
+
+# TypeScript
+node_modules
+dist
+*.log
+
+# IDE/Editor
+.vscode
+.idea
+*.iml
+
+# macOS
+.DS_Store
+
+.env
