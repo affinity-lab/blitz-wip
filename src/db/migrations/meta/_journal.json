@@ -8,6 +8,20 @@
       "when": 1698492830524,
       "tag": "0000_nifty_whistler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1698921311143,
+      "tag": "0001_majestic_wind_dancer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1698927056619,
+      "tag": "0002_early_titanium_man",
+      "breakpoints": true
     }
   ]
 }

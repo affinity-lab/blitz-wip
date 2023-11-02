@@ -6,11 +6,8 @@ redis host:
 https://upstash.com/
 
 # todo
-- env loader / config
+- env loader / config + 
+- scheduler +
 - simple logging
-- password management
-- scheduler
 - validation: zod
-- guard system
 - file management
-- client side

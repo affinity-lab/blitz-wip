@@ -1,6 +1,3 @@
-import user from "./schemas/user.js";
-
-
-const schema = {user};
+import * as schema from "./schemas/schema.js";
 
 export default schema;

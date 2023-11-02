@@ -6,6 +6,7 @@ import * as crypto from "crypto";
 
 
 export default class MySqlRepository<T extends MySqlTable> {
+	protected publicFields: Record<string, any> = {};
 
 	static cache(ttl?: number): MethodDecorator {
 		return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
@@ -36,17 +37,19 @@ export default class MySqlRepository<T extends MySqlTable> {
 		};
 	}
 
-	protected readonly q: Record<string, PreparedQuery<any>>;
+	protected q: Record<string, PreparedQuery<any>>;
 
 	constructor(
 		readonly schema: T,
 		readonly db: MySql2Database<any>,
 		protected store?: Cache<InferSelectModel<T>>,
-		protected cache?: Cache<InferSelectModel<T>>
+		protected cache?: Cache<InferSelectModel<T>>,
+		excludedFields: Array<string> = []
 	) {
+		for (let key of Object.keys(schema)) if (!excludedFields.includes(key)) this.publicFields[key] = (schema as Record<string, any>)[key];
 		this.q = {
-			get: db.select().from(schema).where(sql`id = ${sql.placeholder("id")}`).limit(1).prepare(),
-			all: db.select().from(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare(),
+			get: db.select(this.publicFields).from(schema).where(sql`id = ${sql.placeholder("id")}`).limit(1).prepare(),
+			all: db.select(this.publicFields).from(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare(),
 			del: db.delete(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare()
 		};
 	}
@@ -68,7 +71,8 @@ export default class MySqlRepository<T extends MySqlTable> {
 		let item = await this.store!.get(id);
 		if (item) return Promise.resolve(item);
 		// fetch, store and return
-		item = (await this.q.get.execute({id}))[0];
+		let res = await this.q.get.execute({id})
+		item = res && res.length ? (res)[0] : undefined;
 		if (item) await this.store!.set(this.itemToKeyValue(item));
 		return item;
 	}

@@ -52,15 +52,15 @@ export default class CmdResolver {
                     });
                 }
                 for (const client of cmdConfig.clients) {
-                    let cache: undefined | CacheDef;
-                    if (client.cache === false) cache = undefined;
-                    else if (client.cache === true) cache = defaultCache;
-                    else cache = client.cache;
+                    let c: undefined | CacheDef;
+                    if (client.cache === false) c = undefined;
+                    else if (client.cache === true) c = defaultCache;
+                    else c = client.cache;
                     this.addCmd(client.client.name, client.version, command, {
                         target,
                         func,
                         authenticated,
-                        cache
+                        cache: c
                     });
                 }
             }
@@ -90,7 +90,7 @@ export default class CmdResolver {
 
         const client = this.clients[clientName];
         if (client === undefined) throw new Error("401"); // Client not found
-        if (client.checkApiAccess(req)) throw new Error("403"); // Client not authorized
+        if (!client.checkApiAccess(req)) throw new Error("403"); // Client not authorized
 
 
         const authenticated = client.getAuthenticated(req);
@@ -106,16 +106,12 @@ export default class CmdResolver {
             cacheKey = crypto.createHash("md5").update(clientName + version + command + JSON.stringify(args) + (cmd.cache.user ? JSON.stringify(authenticated) : "")).digest("hex");
             const cached = await this.cache.get(cacheKey);
             if (cached !== undefined){
-                console.log("CACHED");
-
                 return cached;
             }
         }
+        const res = await (cmd.target as { [key: string]: CommandFunc; })[cmd.func](args, req);
 
-            console.log("GENERATED");
-        const res = await (cmd.target as { [key: string]: CommandFunc; })[cmd.func]({}, req);
-
-        if (cmd.cache !== undefined && this.cache) this.cache.set({key: cacheKey, value: res}, cmd.cache.ttl);
+        if (cmd.cache !== undefined && this.cache) await this.cache.set({key: cacheKey, value: res}, cmd.cache.ttl);
 
         return res;
     }

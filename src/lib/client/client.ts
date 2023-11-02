@@ -13,7 +13,7 @@ export class Client implements IClient {
     readonly jwt: Jwt<unknown>;
 
     constructor(readonly name: string, private key: string, private secret: string) {
-        this.jwt = new Jwt(secret);
+        this.jwt = new Jwt(secret, "1h");
     }
 
     checkApiAccess(req: Request): boolean {
@@ -24,5 +24,3 @@ export class Client implements IClient {
         return req.getHeader("auth");
     }
 }
-
-const c = new Client("a", "1", "2");
