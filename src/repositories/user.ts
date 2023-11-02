@@ -1,6 +1,6 @@
 import {eq, InferSelectModel, like, sql} from "drizzle-orm";
 import MySqlRepository from "../lib/repository/my-sql-repository.js";
-import schema from "../db/schemas/@schema.js";
+import schema from "../db/@schema.js";
 import db from "../db/db.js";
 import cacheFactory from "../services/cache-factory.js";
 

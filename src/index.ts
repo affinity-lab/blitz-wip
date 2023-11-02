@@ -4,6 +4,8 @@ import cmdResolver from "./services/cmd-resolver.js";
 import {extendRequest} from "./lib/extend-request.js";
 import cors from "cors";
 
+console.log(cmdResolver.resolvers);
+
 const app = express();
 app.use(extendRequest());
 app.use(cors<cors.CorsRequest>());

@@ -1,5 +1,5 @@
 import {CacheDef, CommandSet} from "./types.js";
-import {Client} from "./client.js";
+import {Client} from "../client/client.js";
 
 type Constructor = (new () => Object) | Function;
 
@@ -41,7 +41,7 @@ export class CmdSetConfig {
         return this.cmds.hasOwnProperty(name) ? this.cmds[name.toString()] : this.cmds[name.toString()] = new CmdConfig(name.toString());
     }
 
-    static getFroomCommandSets(commands: CommandSet[]) {
+    static getConfigsFromCommandSets(commands: CommandSet[]) {
         return commands.map(command => Reflect.get(command, "cmd-set"));
     }
 }

@@ -9,14 +9,15 @@ import {Request} from "express";
 @cmd.set.Authenticated()
 export default class UserCmd implements CommandSet {
     @cmd("get")
-    @cmd.Cache({ttl: 10})
+    @cmd.Cache({ttl: 10, cttl:30, user:true})
     @cmd.Authenticated(false)
-    @cmd.Client(clients.web)
-    async getUser_1(args: { id: number }, req: Request) {
+    @cmd.Client(clients.web, 3)
+    async getUser_3(args: { id: number }, req: Request) {
         return [
             "Hello",
+            await repository.user.getByPhone("203406464"),
             await repository.user.get([1, 2, 3, 4, 5, 6]),
-            await repository.user.get(7),
+            await repository.user.get(4),
             await repository.user.get(8),
             await repository.user.get(9),
             await repository.user.get(10)

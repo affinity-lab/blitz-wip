@@ -1,4 +1,4 @@
-import user from "./user.js";
+import user from "./schemas/user.js";
 
 
 const schema = {user};
