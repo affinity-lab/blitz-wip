@@ -1,21 +1,10 @@
 import {and, eq, InferSelectModel, like, sql} from "drizzle-orm";
-import MySqlRepository from "../lib/repository/my-sql-repository.js";
-import schema from "../db/@schema.js";
-import db from "../db/db.js";
-import cacheFactory from "../services/cache-factory.js";
-import {passwordService} from "../services/password-service.js";
+import MySqlRepository from "../lib/repository/my-sql-repository";
+import * as schema from "../app/schema";
+import {passwordService} from "../services/password-service";
+import {SchemaType} from "../app/schema-type";
 
-
-class UserRepository extends MySqlRepository<typeof schema.user> {
-	constructor() {
-		super(
-			schema.user,
-			db,
-			cacheFactory<InferSelectModel<typeof schema.user>>(10),
-			cacheFactory<any>(30),
-			["password"]
-		);
-	}
+export class UserRepository extends MySqlRepository<SchemaType, typeof schema.user> {
 
     private queries = {
         getByName: this.db.query.user.findFirst({where: like(schema.user.fullName, sql`${sql.placeholder("fullName")}`), columns: {password: false}}).prepare(),
@@ -36,8 +25,3 @@ class UserRepository extends MySqlRepository<typeof schema.user> {
 		return this.queries.auth.execute({name, password: await passwordService.hash(pw)});
 	}
 }
-
-const repository = new UserRepository();
-
-export default repository;
-

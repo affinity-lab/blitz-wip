@@ -1,6 +1,6 @@
 import NodeCache from "node-cache";
-import Cache from "../lib/cache/cache.js";
-import CacheWithNodeCache from "../lib/cache/cache-with-node-cache.js";
+import Cache from "../lib/cache/cache";
+import CacheWithNodeCache from "../lib/cache/cache-with-node-cache";
 
 
 const cache = new NodeCache();

@@ -1,41 +1,50 @@
 import "reflect-metadata";
 import express from "express";
-import {extendRequest} from "./lib/extend-request";
+import {extendRequest} from "./lib/server/extend-request";
 import cors from "cors";
-import {exceptionHandler} from "./lib/exeption-handling/exception-handler";
+import {exceptionHandler} from "./lib/server/exception-handler";
 import "express-async-errors";
 import cfg from "./services/config";
 import logger from "./services/logger";
-import {dbFactory} from "./db/db";
-import {dataSourceStorage} from "./services/storage";
+import {STORAGE} from "./services/storage";
+import mysql from "mysql2/promise";
+import {drizzle} from "drizzle-orm/mysql2";
+import * as schema from "./app/schema";
+import {migrate} from "drizzle-orm/mysql2/migrator";
+import upload from "multer";
+import multer from "multer";
 
-
+/* Wrap the whole process into a async function */
 (async () => {
-    dataSourceStorage["default"] = await dbFactory()
-    let cmdResolver = require("./services/cmd-resolver").default;
+
+    /* Create a database connection, and store the reference in the STORAGE object */
+    STORAGE["db"] = drizzle(await mysql.createConnection(cfg.database.url), {mode: "default", schema, logger: true});
+
+    /* Run database migrations */
+    await migrate(STORAGE["db"], {migrationsFolder: cfg.database.migration});
+
+    /* Create the express server */
     const app = express();
-    app.use(extendRequest());
-    app.use(cors<cors.CorsRequest>());
-    app.use(express.json())
+    app.use(extendRequest()); // extend request with custom properties
+    app.use(cors<cors.CorsRequest>()); // enable cors
+    app.use(express.json()); // enable json
+    app.use(multer().any()); // enable json
+
+    /* Add /api endpoint with the cmdResolver */
+    let cmdResolver = require("./app/cmd-resolver").default;
     app.post("/api/:app/:version/:cmd", async (req, res) => {
-        const response = await cmdResolver.handle(
+        res.json(await cmdResolver.handle(
             req.params.app,
             parseInt(req.params.version),
             req.params.cmd,
             req
-        );
-        res.json(response);
+        ));
     });
-    app.get("/api/:app/:version/:cmd", async (req, res) => {
-        const response = await cmdResolver.handle(
-            req.params.app,
-            parseInt(req.params.version),
-            req.params.cmd,
-            req
-        );
-        res.json(response);
-    });
+
+    /* Add exception handler to catch all exceptions*/
     app.use(exceptionHandler(logger));
 
+    /* Start the server */
     app.listen(cfg.serverPort, () => console.log(`Example app listening on port http://localhost:${cfg.serverPort}`));
-})()
+
+})();

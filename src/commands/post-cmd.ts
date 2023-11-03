@@ -1,9 +1,9 @@
-import repository from "../repositories/@repository.js";
-import {CommandSet} from "../lib/command/types.js";
-import cmd from "../lib/command/cmd.js";
-import {clients} from "../app/clients.js";
+import repository from "../app/repository";
+import {CommandSet} from "../lib/server/command/types";
+import cmd from "../lib/server/command/cmd";
+import {clients} from "../app/clients";
 import {Request} from "express";
-import {IClient} from "../lib/client/client.js";
+import {IClient} from "../lib/client/client";
 
 @cmd.set("post")
 @cmd.set.Client(clients.mobile, [1, 2])

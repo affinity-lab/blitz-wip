@@ -5,14 +5,13 @@
   "type": "commonjs",
   "main": "dist/index.ts",
   "scripts": {
-    "dev": "nodemon -w src --exec tsx ./src/index.ts",
-    "dev1": "nodemon --watch './src/**/*.ts' --exec node --loader ts-node/esm src/index.ts",
-    "dev2": "ts-node src/index.ts",
-    "studio": "tsc&&npx drizzle-kit studio --host 127.0.0.1",
-    "bunstudio": "bunx drizzle-kit studio",
+    "dev": "npm run dev:tsx",
+    "dev:tsx": "nodemon -w src --exec tsx ./src/index.ts",
+    "dev:ts-node": "nodemon -w src --exec ts-node src/index.ts",
+    "studio": "npx drizzle-kit studio --host 127.0.0.1",
     "build": "npx tsc",
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "rimraf ./dist",
+    "prod": "node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +20,8 @@
     "@types/cors": "^2.8.15",
     "@types/ini": "^1.3.32",
     "@types/jsonwebtoken": "^9.0.4",
-    "argon2": "^0.31.1",
+    "@types/multer": "^1.4.9",
+    "chalk": "^5.3.0",
     "cors": "^2.8.5",
     "cron": "^3.1.6",
     "dotenv": "^16.3.1",
@@ -33,9 +33,11 @@
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
+    "multer": "1.4.5-lts.1",
     "mysql2": "^3.6.2",
     "node-cache": "^5.1.2",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/express": "^4.17.20",

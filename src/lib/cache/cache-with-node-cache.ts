@@ -1,5 +1,5 @@
 import NodeCache, {ValueSetItem} from "node-cache";
-import Cache, {type KeyValue} from "./cache.js";
+import Cache, {type KeyValue} from "./cache";
 
 
 export default class CacheWithNodeCache<T = any> extends Cache<T> {

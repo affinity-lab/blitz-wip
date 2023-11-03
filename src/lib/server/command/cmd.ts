@@ -1,5 +1,5 @@
-import {CacheDef, CommandSet} from "./types.js";
-import {Client} from "../client/client.js";
+import {CacheDef, CommandSet} from "./types";
+import {Client} from "../../client/client";
 import {z} from "zod";
 
 type Constructor = (new () => Object) | Function;

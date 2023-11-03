@@ -1,9 +1,9 @@
 import type {Config} from "drizzle-kit";
-import cfg from "./dist/services/config";
+import cfg from "./src/services/config";
 
 export default {
     verbose: true,
-    schema: "./src/db/schemas/*",
+    schema: "./src/db/schema.ts",
     out: cfg.database.migration,
     driver: "mysql2",
     dbCredentials: {

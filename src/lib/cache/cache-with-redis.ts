@@ -1,4 +1,4 @@
-import Cache, {type KeyValue} from "./cache.js";
+import Cache, {type KeyValue} from "./cache";
 import {Redis} from "ioredis";
 
 

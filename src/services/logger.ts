@@ -1,4 +1,4 @@
-import {Logger} from "../lib/exeption-handling/logger.js";
+import {Logger} from "../lib/exeption-handling/logger";
 
 
 const logger = new Logger(console.log)

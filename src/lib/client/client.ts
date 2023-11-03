@@ -1,4 +1,4 @@
-import {Jwt} from "../jwt.js";
+import {Jwt} from "../jwt";
 import {Request} from "express";
 
 export interface IClient {

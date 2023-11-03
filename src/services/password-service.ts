@@ -1,4 +1,4 @@
-import {Password} from "../lib/password.js";
-import cfg from "./config.js";
+import {Password} from "../lib/password";
+import cfg from "./config";
 
-export const passwordService: Password = new Password(Buffer.from(cfg.crypto.pepper));
+export const passwordService: Password = new Password(Buffer.from(cfg.crypto.passwordPepper));

@@ -1,5 +1,3 @@
-import {IClient} from "../../lib/client/client.js";
-
 export {};
 
 declare global {

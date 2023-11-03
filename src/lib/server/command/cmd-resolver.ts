@@ -1,13 +1,15 @@
-import {CacheDef, CommandFunc, CommandSet} from "./types.js";
-import {CmdSetConfig} from "./cmd.js";
+import {CacheDef, CommandFunc, CommandSet, Files} from "./types";
+import {CmdSetConfig} from "./cmd";
 import {Request} from "express";
-import Cache from "../cache/cache.js";
-import {Client} from "../client/client.js";
+import Cache from "../../cache/cache";
+import {Client} from "../../client/client";
 import * as crypto from "crypto";
-import {Logger} from "../exeption-handling/logger.js";
-import {Jwt} from "../jwt.js";
+import {Logger} from "../../exeption-handling/logger";
+import {Jwt} from "../../jwt";
 import {z} from "zod";
-import {BlitzError} from "../exeption-handling/error";
+import {BlitzError} from "../../exeption-handling/error";
+import * as console from "console";
+import FileField from "./file-field";
 
 type TResolverCmd = { // command
     target: CommandSet,
@@ -107,25 +109,44 @@ export default class CmdResolver {
         req.context.set("client", this.clients[clientName]);
         req.context.set("authenticated", authenticated);
 
-        this.logger.request(`${client.name}.${version}/${command} - Authenticated: ${Jwt.getStringContent(authenticated)}`);
 
-        let args = req.body;
+        let type: string = "";
+        let args;
+        let files: Files = {};
+        if (req.is("application/json")) {
+            type = "json";
+            args = req.body;
+        } else if (req.is("multipart/form-data")) {
+            type = "form-data";
+            args = req.body;
+            if (req.files !== undefined) {
+                for (const file of req.files as Array<Express.Multer.File>) {
+                    if (files[file.fieldname] === undefined) files[file.fieldname] = [];
+                    files[file.fieldname].push(new FileField(file.originalname, file.mimetype, file.size, file.buffer));
+                }
+            }
+        } else {
+            throw new BlitzError("Request not accepted", "2");
+        }
 
-        if(cmd.validator) {
+        this.logger.request(`(${type}) ${client.name}.${version}/${command} - Authenticated: ${Jwt.getStringContent(authenticated)}`);
+
+
+        if (cmd.validator) {
             let parsed = cmd.validator.safeParse(args);
             if (!parsed.success) throw new BlitzError(`Error when calling ${client.name}.${version}/${command}`, "1", parsed.error.issues);
-            args = parsed.data
+            args = parsed.data;
         }
 
         let cacheKey: string = "";
         if (cmd.cache !== undefined && this.cache) {
             cacheKey = crypto.createHash("md5").update(clientName + version + command + JSON.stringify(args) + (cmd.cache.user ? JSON.stringify(authenticated) : "")).digest("hex");
             const cached = await this.cache.get(cacheKey);
-            if (cached !== undefined){
+            if (cached !== undefined) {
                 return cached;
             }
         }
-        const res = await (cmd.target as { [key: string]: CommandFunc; })[cmd.func](args, req);
+        const res = await (cmd.target as { [key: string]: CommandFunc; })[cmd.func](args, req, files);
 
         if (cmd.cache !== undefined && this.cache) await this.cache.set({key: cacheKey, value: res}, cmd.cache.ttl);
 
