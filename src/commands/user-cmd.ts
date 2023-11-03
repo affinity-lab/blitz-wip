@@ -5,6 +5,15 @@ import {clients} from "../app/clients.js";
 import {Request} from "express";
 import {passwordService} from "../services/password-service.js";
 import {IClient} from "../lib/client/client.js";
+import {z} from "zod";
+
+const fv = {
+    user: {
+        name: z.string({required_error: "Name is required", invalid_type_error: "Name must be a string"}).trim(),
+        password: z.string({required_error: "Password is required", invalid_type_error: "Password must be a string"}),
+        phone: z.string({required_error: "Phone is required", invalid_type_error: "Phone must be a string"}).trim().regex(/^[0-9]{9}$/g, {message: "Phone must be exactly 9 numbers!"})
+    }
+}
 
 @cmd.set("user")
 @cmd.set.Client(clients.mobile, [1, 2])
@@ -21,6 +30,7 @@ export default class UserCmd implements CommandSet {
     }
 
     @cmd("create")
+    @cmd.Validate(z.object({name: fv.user.name, password: fv.user.password, phone: fv.user.phone}))
     async createUser(args: {name: string, phone: string, password: string}) {
         return repository.user.insert({fullName: args.name, phone: args.phone, password: await passwordService.hash(args.password)})
     }

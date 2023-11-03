@@ -15,13 +15,12 @@ class UserRepository extends MySqlRepository<typeof schema.user> {
 			cacheFactory<any>(30),
 			["password"]
 		);
-		console.log("USER", Object.keys(schema.user))
 	}
 
     private queries = {
-        getByName: db.query.user.findFirst({where: like(schema.user.fullName, sql`${sql.placeholder("fullName")}`), columns: {password: false}}).prepare(),
-        getByPhone: db.query.user.findFirst({where: eq(schema.user.phone, sql.placeholder("phone")), columns: {password: false}}).prepare(),
-        auth: db.query.user.findFirst({where: and(eq(schema.user.fullName, sql.placeholder("name")), eq(schema.user.password, sql.placeholder("password"))), columns: {password: false}}).prepare(),
+        getByName: this.db.query.user.findFirst({where: like(schema.user.fullName, sql`${sql.placeholder("fullName")}`), columns: {password: false}}).prepare(),
+        getByPhone: this.db.query.user.findFirst({where: eq(schema.user.phone, sql.placeholder("phone")), columns: {password: false}}).prepare(),
+        auth: this.db.query.user.findFirst({where: and(eq(schema.user.fullName, sql.placeholder("name")), eq(schema.user.password, sql.placeholder("password"))), columns: {password: false}}).prepare(),
     };
 
 	@MySqlRepository.store()

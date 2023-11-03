@@ -16,7 +16,7 @@ class PostRepository extends MySqlRepository<typeof schema.post> {
 	}
 
 	private queries = {
-		getPost: db.query.post.findFirst({where: like(schema.post.id, sql`${sql.placeholder("id")}`), with: {author: {columns: {password: false}}}}).prepare(),
+		getPost: this.db.query.post.findFirst({where: like(schema.post.id, sql`${sql.placeholder("id")}`), with: {author: {columns: {password: false}}}}).prepare(),
 	};
 
 	getPost(id: number) {

@@ -1,5 +1,6 @@
 import {CacheDef, CommandSet} from "./types.js";
 import {Client} from "../client/client.js";
+import {z} from "zod";
 
 type Constructor = (new () => Object) | Function;
 
@@ -8,6 +9,7 @@ export class CmdConfig {
     cache?: CacheDef;
     clients: Array<{ client: Client, version: number | Array<number>, cache: boolean | CacheDef }> = [];
     authenticated?: boolean;
+    validator?: z.ZodObject<any>
 
     constructor(public func: string) {
         this.alias = func;
@@ -48,9 +50,10 @@ export class CmdSetConfig {
 
 
 /* - - -- - - - - - -- */
+// removed unused descriptors
 
 const cmd = (alias?: string): MethodDecorator => {
-    return function (target, propertyKey, descriptor) {
+    return function (target, propertyKey) {
         CmdSetConfig.set(target.constructor, cmdSet => {
             const cmd = cmdSet.getCmd(propertyKey);
             if (alias) cmd.alias = alias;
@@ -59,8 +62,18 @@ const cmd = (alias?: string): MethodDecorator => {
     };
 };
 
+cmd.Validate = function validateArgs(ZodPattern: z.ZodObject<any>): MethodDecorator {
+    return function (target: object, propertyKey: string | symbol) {
+        CmdSetConfig.set(target.constructor, cmdSet => {
+            const cmd = cmdSet.getCmd(propertyKey);
+            cmd.validator = ZodPattern;
+            return cmdSet;
+        })
+    };
+}
+
 cmd.Cache = (cache: CacheDef): MethodDecorator => {
-    return function (target, propertyKey, descriptor) {
+    return function (target, propertyKey) {
         CmdSetConfig.set(target.constructor, cmdSet => {
             const cmd = cmdSet.getCmd(propertyKey);
             cmd.cache = cache;
@@ -69,7 +82,7 @@ cmd.Cache = (cache: CacheDef): MethodDecorator => {
     };
 };
 cmd.Authenticated = (status: boolean = true): MethodDecorator => {
-    return function (target, propertyKey, descriptor) {
+    return function (target, propertyKey) {
         CmdSetConfig.set(target.constructor, cmdSet => {
             const cmd = cmdSet.getCmd(propertyKey);
             cmd.authenticated = status;
@@ -78,7 +91,7 @@ cmd.Authenticated = (status: boolean = true): MethodDecorator => {
     };
 };
 cmd.Client = (client: Client, version: number | Array<number> = 1, cache: boolean | CacheDef = true): MethodDecorator => {
-    return function (target, propertyKey, descriptor) {
+    return function (target, propertyKey) {
         CmdSetConfig.set(target.constructor, cmdSet => {
             const cmd = cmdSet.getCmd(propertyKey);
             cmd.clients.push({client, version, cache});
@@ -112,6 +125,8 @@ cmdset.Authenticated = (status: boolean = true): ClassDecorator => {
         });
     };
 };
+
+
 
 cmd.set = cmdset;
 export default cmd;

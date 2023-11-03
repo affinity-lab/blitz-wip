@@ -15,7 +15,6 @@ export default class PostCmd implements CommandSet {
 		await guard.auth(req);
 		let post = await repository.post.get(args.id)
 		let user = await repository.user.get(post!.authorId!)
-		console.log(user, post)
 		return {post, author: user}
 
 		// return repository.post.getPost(args.id);

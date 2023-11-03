@@ -20,7 +20,8 @@
     "rootDir": "src",
     "lib": ["ESNext", "esnext.asynciterable"],
     "skipLibCheck": true,
-    "typeRoots": ["./src/@types", "./node_modules/@types"]
+    "typeRoots": ["./src/@types", "./node_modules/@types"],
+    "baseUrl": "."
   },
   "include": [
     "src/**/*.ts"

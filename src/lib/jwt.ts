@@ -21,5 +21,19 @@ export class Jwt<T> {
 	encode<I = T>(payload: I, expires?: string): string {
 		return jwt.sign({content: payload}, this.secret, {algorithm: this.algorithm, expiresIn: expires ?? this.expires});
 	};
+
+	static getStringContent(token: string | undefined) {
+		if(!token) return undefined;
+		return atob(token.split('.')[1]);
+	}
+
+	static getContent(token: string | undefined) {
+		if(!token) return undefined;
+		try {
+			JSON.parse(this.getStringContent(token)!);
+		} catch (e) {
+			return undefined;
+		}
+	}
 }
 

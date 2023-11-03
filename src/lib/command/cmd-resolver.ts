@@ -4,12 +4,17 @@ import {Request} from "express";
 import Cache from "../cache/cache.js";
 import {Client} from "../client/client.js";
 import * as crypto from "crypto";
+import {Logger} from "../exeption-handling/logger.js";
+import {Jwt} from "../jwt.js";
+import {z} from "zod";
+import {BlitzError} from "../exeption-handling/error";
 
 type TResolverCmd = { // command
     target: CommandSet,
     func: string,
     authenticated: boolean,
-    cache: undefined | CacheDef
+    cache: undefined | CacheDef,
+    validator?: z.ZodObject<any>
 }
 
 type TResolvers =
@@ -28,6 +33,7 @@ export default class CmdResolver {
     constructor(
         private clients: Record<string, Client>,
         private cache: undefined | Cache,
+        private logger: Logger,
         ...commandSets: Array<CommandSet>
     ) {
         const cmdSetsConfig: Array<CmdSetConfig> = CmdSetConfig.getConfigsFromCommandSets(commandSets);
@@ -48,7 +54,8 @@ export default class CmdResolver {
                         target,
                         func,
                         authenticated,
-                        cache: defaultCache
+                        cache: defaultCache,
+                        validator: cmdConfig.validator
                     });
                 }
                 for (const client of cmdConfig.clients) {
@@ -60,7 +67,8 @@ export default class CmdResolver {
                         target,
                         func,
                         authenticated,
-                        cache: c
+                        cache: c,
+                        validator: cmdConfig.validator
                     });
                 }
             }
@@ -99,7 +107,15 @@ export default class CmdResolver {
         req.context.set("client", this.clients[clientName]);
         req.context.set("authenticated", authenticated);
 
-        const args = req.body;
+        this.logger.request(`${client.name}.${version}/${command} - Authenticated: ${Jwt.getStringContent(authenticated)}`);
+
+        let args = req.body;
+
+        if(cmd.validator) {
+            let parsed = cmd.validator.safeParse(args);
+            if (!parsed.success) throw new BlitzError(`Error when calling ${client.name}.${version}/${command}`, "1", parsed.error.issues);
+            args = parsed.data
+        }
 
         let cacheKey: string = "";
         if (cmd.cache !== undefined && this.cache) {

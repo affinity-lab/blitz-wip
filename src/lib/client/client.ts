@@ -20,7 +20,7 @@ export class Client implements IClient {
         return this.key === req.getHeader("api");
     }
 
-    getAuthenticated(req: Request): undefined | string | number {
+    getAuthenticated(req: Request): undefined | string {
         return req.getHeader("auth");
     }
 }

@@ -3,6 +3,7 @@ import {InferInsertModel, InferSelectModel, sql} from "drizzle-orm";
 import {MySql2Database} from "drizzle-orm/mysql2";
 import Cache, {KeyValue} from "../cache/cache.js";
 import * as crypto from "crypto";
+import schema from "../../db/@schema.js";
 
 
 export default class MySqlRepository<T extends MySqlTable> {
@@ -39,18 +40,21 @@ export default class MySqlRepository<T extends MySqlTable> {
 
 	protected q: Record<string, PreparedQuery<any>>;
 
+	readonly db: MySql2Database<typeof schema>;
+
 	constructor(
 		readonly schema: T,
-		readonly db: MySql2Database<any>,
+		db: () => MySql2Database<any>,
 		protected store?: Cache<InferSelectModel<T>>,
 		protected cache?: Cache<InferSelectModel<T>>,
 		excludedFields: Array<string> = []
 	) {
+		this.db = db();
 		for (let key of Object.keys(schema)) if (!excludedFields.includes(key)) this.publicFields[key] = (schema as Record<string, any>)[key];
 		this.q = {
-			get: db.select(this.publicFields).from(schema).where(sql`id = ${sql.placeholder("id")}`).limit(1).prepare(),
-			all: db.select(this.publicFields).from(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare(),
-			del: db.delete(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare()
+			get: this.db.select(this.publicFields).from(schema).where(sql`id = ${sql.placeholder("id")}`).limit(1).prepare(),
+			all: this.db.select(this.publicFields).from(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare(),
+			del: this.db.delete(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare()
 		};
 	}
 
