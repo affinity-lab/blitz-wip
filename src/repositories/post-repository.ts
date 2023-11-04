@@ -2,6 +2,7 @@ import {like, sql} from "drizzle-orm";
 import MySqlRepository from "../lib/repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {SchemaType} from "../app/schema-type";
+import AttachmentHandler from "../lib/repository/attachment-handler";
 
 
 export class PostRepository extends MySqlRepository<SchemaType, typeof schema.post> {
@@ -19,6 +20,3 @@ export class PostRepository extends MySqlRepository<SchemaType, typeof schema.po
     }
 }
 
-class AttachmentHandler{
-
-}

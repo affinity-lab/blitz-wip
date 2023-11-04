@@ -1,12 +1,12 @@
 import {MySqlTable, MySqlUpdateSetSource, PreparedQuery} from "drizzle-orm/mysql-core";
 import {InferInsertModel, InferSelectModel, sql} from "drizzle-orm";
-import {MySql2Database} from "drizzle-orm/mysql2";
+import {MySql2Database, MySqlRawQueryResult} from "drizzle-orm/mysql2";
 import Cache, {KeyValue} from "../cache/cache";
 import * as crypto from "crypto";
+import AttachmentHandler from "./attachment-handler";
 
 
 export default class MySqlRepository<S extends Record<string, any>, T extends MySqlTable> {
-    protected publicFields: Record<string, any> = {};
 
     static cache(ttl?: number): MethodDecorator {
         return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
@@ -37,7 +37,9 @@ export default class MySqlRepository<S extends Record<string, any>, T extends My
         };
     }
 
+    public readonly attachments: Record<string, AttachmentHandler> = {};
     private baseQueries: Record<string, PreparedQuery<any>> = {};
+    protected publicFields: Record<string, any> = {};
 
     constructor(
         readonly schema: T,
@@ -50,7 +52,7 @@ export default class MySqlRepository<S extends Record<string, any>, T extends My
         this.baseQueries = {
             get: this.db.select(this.publicFields).from(schema).where(sql`id = ${sql.placeholder("id")}`).limit(1).prepare(),
             all: this.db.select(this.publicFields).from(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare(),
-            del: this.db.delete(schema).where(sql`id IN (${sql.placeholder("ids")})`).prepare()
+            del: this.db.delete(schema).where(sql`id = (${sql.placeholder("id")})`).prepare()
         };
     }
 
@@ -100,21 +102,62 @@ export default class MySqlRepository<S extends Record<string, any>, T extends My
         return Promise.resolve(result);
     }
 
+    private eventHandlers: Record<string, Array<(...arg: any) => void | Promise<void>>> = {
+        beforeInsert: [],
+        afterInsert: [],
+        beforeUpdate: [],
+        afterUpdate: [],
+        beforeDelete: [],
+        afterDelete: []
+    };
+
+    public beforeInsert(func: (values: InferInsertModel<T>) => void) {
+        this.eventHandlers.beforeInsert.push(func);
+    }
+
+    public afterInsert(func: (id: number, values: InferInsertModel<T>) => void) {
+        this.eventHandlers.afterInsert.push(func);
+    }
+
+    public beforeUpdate(func: (id: number, values: MySqlUpdateSetSource<T>) => void) {
+        this.eventHandlers.beforeUpdate.push(func);
+    }
+
+    public afterUpdate(func: (id: number, values: MySqlUpdateSetSource<T>, affectedRows: number) => void) {
+        this.eventHandlers.afterUpdate.push(func);
+    }
+
+    public beforeDelete(func: (id: number) => void) {
+        this.eventHandlers.beforeDelete.push(func);
+    }
+
+    public afterDelete(func: (id: number) => void) {
+        this.eventHandlers.afterDelete.push(func);
+    }
+
     async insert(values: InferInsertModel<T>): Promise<number | undefined> {
+        for (const handler of this.eventHandlers.beforeInsert) await handler(values);
         const res = await this.db.insert(this.schema).values(values);
-        return res[0].insertId;
+        const id = res[0].insertId;
+        for (const handler of this.eventHandlers.afterInsert) await handler(values);
+        return id;
     }
 
     async update(id: number, values: MySqlUpdateSetSource<T>) {
         await this.store?.del(id);
-        return this.db.update(this.schema).set(values).where(sql`id = ${id}`);
+        for (const handler of this.eventHandlers.beforeUpdate) await handler(id, values);
+        const res: MySqlRawQueryResult = await this.db.update(this.schema).set(values).where(sql`id = ${id}`);
+        const affectedRows = res[0].affectedRows;
+        for (const handler of this.eventHandlers.afterUpdate) await handler(id, values, affectedRows);
+        return affectedRows;
     }
 
-    async delete(ids: Array<number>): Promise<void>;
-    async delete(id: number): Promise<void>;
-    async delete(id: number | Array<number>): Promise<void> {
-        if (!Array.isArray(id)) id = [id];
+    async delete(id: number): Promise<void> {
         await this.store?.del(id);
-        return this.baseQueries.del.execute({id});
+        for (const handler of this.eventHandlers.beforeDelete) await handler(id);
+        const res: MySqlRawQueryResult = await this.baseQueries.del.execute({id});
+        const affectedRows = res[0].affectedRows;
+        if (affectedRows > 0) for (const key in this.attachments) this.attachments[key].purge();
+        for (const handler of this.eventHandlers.afterDelete) await handler(id, affectedRows);
     }
 }
