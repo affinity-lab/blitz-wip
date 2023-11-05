@@ -1,0 +1,28 @@
+{
+  id: "ed452013-debe-48e1-957e-9451bdd0bb04",
+  name: "Test",
+  icon: "FOLDER",
+  sortWeight: 1000000,
+  headers: [
+    {
+      key: "api",
+      value: "000-111-222-333-444-555-666-777-888",
+      disabled: true
+    },
+    {
+      key: "auth",
+      disabled: true
+    }
+  ],
+  auth: {
+    type: "API_KEY",
+    apiKey: {
+      key: "api",
+      value: "000-111-222-333-444-555-666-777-888",
+      inHeader: true
+    }
+  },
+  variables: {
+  	'default': {'baseUrl': 'http://localhost:3000/api'}
+  }
+}

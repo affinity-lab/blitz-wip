@@ -92,6 +92,7 @@ export default class CmdResolver {
         if (v === undefined) throw new Error("404"); // Version not found
         const cmd = v[command];
         if (cmd === undefined) throw new Error("404"); // Command not found
+
         return cmd.handle(req, this.logger, this.cache);
     }
 }

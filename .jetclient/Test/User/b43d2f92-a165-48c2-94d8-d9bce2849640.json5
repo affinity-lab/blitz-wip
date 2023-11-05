@@ -1,0 +1,38 @@
+{
+  id: "b43d2f92-a165-48c2-94d8-d9bce2849640",
+  name: "User",
+  icon: "FOLDER",
+  sortWeight: 1000000,
+  requests: [
+    {
+      id: "1f8163b0-e691-4ca2-bef0-5b4268fd72c4",
+      name: "Create",
+      method: "POST",
+      url: "{{baseUrl}}/mobile/1/user.create",
+      queryParams: [
+        {
+          key: "file",
+          disabled: true
+        }
+      ],
+      headers: [
+        {
+          key: "Content-Type",
+          value: "application/json"
+        }
+      ],
+      body: {
+        type: "JSON",
+        raw: '{\
+\t"name":"Elvis Aaron Presley",\
+\t"password": ""\
+}'
+      }
+    },
+    {
+      id: "9aabb152-26ad-4d97-bc2f-4a6445e9f3ec",
+      name: "Login",
+      method: "POST"
+    }
+  ]
+}
