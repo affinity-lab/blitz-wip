@@ -1,6 +1,6 @@
 import {CacheDef, CommandFunc, CommandSet, Files} from "./types";
 import {z} from "zod";
-import {Client} from "../../client/client";
+import {IClient} from "../../client/client";
 import {Request} from "express";
 import {Logger} from "../../exeption-handling/logger";
 import Cache from "../../cache/cache";
@@ -16,7 +16,7 @@ class Command {
                 readonly authenticated: boolean,
                 readonly cache: undefined | CacheDef,
                 readonly validator: undefined | z.ZodObject<any>,
-                readonly client: Client,
+                readonly client: IClient,
                 readonly version: number,
                 readonly command: string) {
     }

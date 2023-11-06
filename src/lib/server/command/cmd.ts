@@ -1,5 +1,5 @@
 import {CacheDef, CommandSet} from "./types";
-import {Client} from "../../client/client";
+import {IClient} from "../../client/client";
 import {z} from "zod";
 
 type Constructor = (new () => Object) | Function;
@@ -7,7 +7,7 @@ type Constructor = (new () => Object) | Function;
 export class CmdConfig {
     alias: string;
     cache?: CacheDef;
-    clients: Array<{ client: Client, version: number | Array<number>, cache: boolean | CacheDef }> = [];
+    clients: Array<{ client: IClient, version: number | Array<number>, cache: boolean | CacheDef }> = [];
     authenticated?: boolean;
     validator?: z.ZodObject<any>
 
@@ -18,7 +18,7 @@ export class CmdConfig {
 
 export class CmdSetConfig {
     alias: string;
-    clients: Array<{ client: Client, version: number | Array<number> }> = [];
+    clients: Array<{ client: IClient, version: number | Array<number> }> = [];
     authenticated: boolean = false;
 
     cmds: Record<string, CmdConfig> = {};
@@ -90,7 +90,7 @@ cmd.Authenticated = (status: boolean = true): MethodDecorator => {
         });
     };
 };
-cmd.Client = (client: Client, version: number | Array<number> = 1, cache: boolean | CacheDef = true): MethodDecorator => {
+cmd.Client = (client: IClient, version: number | Array<number> = 1, cache: boolean | CacheDef = true): MethodDecorator => {
     return function (target, propertyKey) {
         CmdSetConfig.set(target.constructor, cmdSet => {
             const cmd = cmdSet.getCmd(propertyKey);
@@ -109,7 +109,7 @@ const cmdset = (alias?: string): ClassDecorator => {
         });
     };
 };
-cmdset.Client = (client: Client, version: number | Array<number> = 1): ClassDecorator => {
+cmdset.Client = (client: IClient, version: number | Array<number> = 1): ClassDecorator => {
     return function (target) {
         CmdSetConfig.set(target, cmdSet => {
             cmdSet.clients.push({client, version});

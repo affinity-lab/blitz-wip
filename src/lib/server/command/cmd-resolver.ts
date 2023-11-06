@@ -2,7 +2,7 @@ import {CacheDef, CommandSet} from "./types";
 import {CmdSetConfig} from "./cmd";
 import {Request} from "express";
 import Cache from "../../cache/cache";
-import {Client} from "../../client/client";
+import {IClient} from "../../client/client";
 import {Logger} from "../../exeption-handling/logger";
 import Command from "./command";
 
@@ -21,7 +21,7 @@ export default class CmdResolver {
     readonly resolvers: TResolvers = {};
 
     constructor(
-        private clients: Record<string, Client>,
+        private clients: Record<string, IClient>,
         private cache: undefined | Cache,
         private logger: Logger,
         ...commandSets: Array<CommandSet>
