@@ -4,6 +4,7 @@ import * as schema from "./schema";
 import {db} from "../services/async-storage/db";
 import cacheFactory from "../services/cache-factory";
 import {InferSelectModel} from "drizzle-orm";
+import {VerificationRepository} from "../repositories/verification-repository";
 
 
 const repository = {
@@ -19,6 +20,10 @@ const repository = {
         db,
         cacheFactory<InferSelectModel<typeof schema.post>>(10),
         cacheFactory<any>(30)
+    ),
+    verification: new VerificationRepository(
+        schema.verification,
+        db
     )
 };
 

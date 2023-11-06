@@ -5,42 +5,47 @@ import {clients} from "../app/clients";
 import {Request} from "express";
 import {passwordService} from "../services/password-service";
 import {IClient} from "../lib/client/client";
-import {z} from "zod";
+import crypto from "crypto";
+import {appError} from "../app/errors";
 
-const fv = {
-    user: {
-        name: z.string().trim(),
-        password: z.string().trim(),
-        phone: z.string().trim().length(9).optional()
-    }
-};
+// const fv = {
+//     user: {
+//         name: z.string().trim(),
+//         password: z.string().trim(),
+//         phone: z.string().trim().length(9).optional()
+//     }
+// };
 
 @cmd.set("user")
-@cmd.set.Client(clients.mobile, [1, 2])
-@cmd.set.Authenticated(false)
+@cmd.set.Client(clients.mobile, 1)
 export default class UserCmd implements CommandSet {
 
-    @cmd("get")
-    @cmd.Cache({ttl: 10, cttl: 30, user: true})
-    @cmd.Client(clients.web, 3)
-    async getUser_3() {
-        return [
-            "Hello",
-            await repository.user.get(12)
-        ];
+    @cmd("doesExist")
+    async getByEmail(args: {email: string}): Promise<boolean> {
+        return repository.user.getByEmail(args.email).then(r=>!!r)
     }
 
     @cmd("create")
-    @cmd.Authenticated(true)
-    @cmd.Validate(z.object({name: fv.user.name, password: fv.user.password, phone: fv.user.phone}))
-    async createUser(args: { name: string, phone: string, password: string }) {
-        return repository.user.insert({fullName: args.name, phone: args.phone, password: await passwordService.hash(args.password)});
+    async createUser(args: { name: string, email: string, password: string, verificationCode: string}) {
+        if (await repository.verification.verify(args.verificationCode, args.email)) {
+            return repository.user.insert({name: args.name, email: args.email, password: await passwordService.hash(args.password)});
+        }
+        throw appError.auth.verificationCode();
     }
 
-    @cmd("login")
-    async userLogin(args: { name: string, password: string }, req: Request) {
+    @cmd()
+    async createVerification(args: {email: string}): Promise<boolean> {
+        let code = crypto.randomUUID()
+        await repository.verification.insert({email: args.email, code})
+        // send mail
+        console.log(code);
+        return true;
+    }
+
+    @cmd()
+    async login(args: { name: string, password: string }, req: Request): Promise<undefined | string> {
         let res = await repository.user.auth(args.name, args.password);
-        if (!res) return null;
+        if (!res) return undefined;
         let client = req.context.get("client") as IClient;
         return client.jwt.encode(res.id);
     }

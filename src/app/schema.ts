@@ -1,4 +1,4 @@
-import {char, int, mysqlTable, serial, text, varchar} from "drizzle-orm/mysql-core";
+import {char, int, mysqlTable, serial, varchar, timestamp} from "drizzle-orm/mysql-core";
 import {relations} from "drizzle-orm";
 
 export const post = mysqlTable("posts", {
@@ -11,9 +11,16 @@ export const postRelations = relations(post, ({ one }) => ({author: one(user, {f
 
 export const user = mysqlTable("users", {
 	id: serial("id").primaryKey(),
-	fullName: text("full_name"),
-	phone: varchar("phone", {length: 255}),
+	name: varchar("name", {length: 255}),
+	email: varchar("email", {length: 255}),
 	password: char("password", {length: 255})
 });
 
 export const userRelations = relations(user, ({ many }) => ({posts: many(post)}))
+
+export const verification = mysqlTable("verification", {
+	id: serial("id").primaryKey(),
+	email: varchar("email", {length: 255}),
+	code: varchar("code", {length: 36}),
+	created: timestamp("created").defaultNow()
+})
