@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {Logger} from "../exeption-handling/logger";
-import {BlitzError} from "../exeption-handling/error";
+import {BlitzError} from "../exeption-handling/blitz-error";
 
 export function exceptionHandler(logger: Logger) {
     return async (error: Error | BlitzError, req: Request, res: Response, next: NextFunction): Promise<void> => {

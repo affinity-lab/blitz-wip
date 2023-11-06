@@ -7,10 +7,9 @@ import Cache from "../../cache/cache";
 import {Jwt} from "../../jwt";
 import crypto from "crypto";
 import FileField from "./file-field";
-import {BlitzError} from "../../exeption-handling/error";
+import {blitzError} from "../../errors";
 
-export default
-class Command {
+export default class Command {
     constructor(readonly target: CommandSet,
                 readonly func: string,
                 readonly authenticated: boolean,
@@ -43,12 +42,12 @@ class Command {
     }
 
     protected checkApiAccess(req: Request) {
-        if (!this.client.checkApiAccess(req)) throw new Error("403"); // Client not authorized
+        if (!this.client.checkApiAccess(req)) throw blitzError.command.clientNotAuthorized(); // Client not authorized
     }
 
     protected getAuthenticated(req: Request) {
         const authenticated = this.client.getAuthenticated(req);
-        if (this.authenticated && authenticated === undefined) throw new Error("401"); // User not authenticated
+        if (this.authenticated && authenticated === undefined) throw blitzError.command.userNotAuthenticated(); // User not authenticated
         return authenticated;
     }
 
@@ -69,7 +68,7 @@ class Command {
                 }
             }
         } else {
-            throw new BlitzError("Request not accepted", "2");
+            throw blitzError.command.requestTypeNotAccepted();
         }
         return {type, args, files};
     }
@@ -77,7 +76,7 @@ class Command {
     protected validateArgs(args: Record<string, any>): Record<string, any> {
         if (this.validator) {
             let parsed = this.validator.safeParse(args);
-            if (!parsed.success) throw new BlitzError(`Error when calling ${this.client.name}.${this.version}/${this.command}`, "1", parsed.error.issues);
+            if (!parsed.success) throw blitzError.command.validationError(this, parsed.error.issues);
             args = parsed.data;
         }
         return args;
