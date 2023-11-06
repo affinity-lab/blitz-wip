@@ -1,5 +1,6 @@
 import {Buffer} from "buffer";
 import * as fs from "fs";
+import path from "path";
 
 export default class FileField {
     constructor(readonly name: string,
@@ -8,6 +9,6 @@ export default class FileField {
                 readonly buffer: Buffer) {
     }
     save(to: string) {
-        fs.writeFileSync(to + this.name, this.buffer);
+        fs.writeFileSync(path.resolve("var", to, this.name), this.buffer);
     }
 }

@@ -31,6 +31,7 @@ export default class UserCmd implements CommandSet {
     }
 
     @cmd("create")
+    @cmd.Authenticated(true)
     @cmd.Validate(z.object({name: fv.user.name, password: fv.user.password, phone: fv.user.phone}))
     async createUser(args: { name: string, phone: string, password: string }) {
         return repository.user.insert({fullName: args.name, phone: args.phone, password: await passwordService.hash(args.password)});

@@ -10,11 +10,12 @@ export class Client implements IClient {
 	}
 
 	checkApiAccess(req: Request): boolean {
-		return this.key === req.getHeader("api");
+		return this.key === req.getHeader("x-api-key");
 	}
 
 	getAuthenticated(req: Request): undefined | string {
-		return req.getHeader("auth");
+		let auth = req.getHeader("authorization")?.substr("bearer ".length).trim();
+		return auth || undefined;
 	}
 }
 

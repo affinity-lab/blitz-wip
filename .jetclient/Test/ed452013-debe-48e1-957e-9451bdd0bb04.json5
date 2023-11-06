@@ -5,9 +5,8 @@
   sortWeight: 1000000,
   headers: [
     {
-      key: "api",
-      value: "000-111-222-333-444-555-666-777-888",
-      disabled: true
+      key: "x-api-key",
+      value: "000-111-222-333-444-555-666-777-888"
     },
     {
       key: "auth",
@@ -15,11 +14,9 @@
     }
   ],
   auth: {
-    type: "API_KEY",
-    apiKey: {
-      key: "api",
-      value: "000-111-222-333-444-555-666-777-888",
-      inHeader: true
+    type: "BEARER",
+    bearer: {
+      token: "{{token}}"
     }
   },
   variables: {

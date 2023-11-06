@@ -18,21 +18,55 @@
       headers: [
         {
           key: "Content-Type",
-          value: "application/json"
+          value: "multipart/form-data"
         }
       ],
       body: {
-        type: "JSON",
-        raw: '{\
-\t"name":"Elvis Aaron Presley",\
-\t"password": ""\
-}'
+        type: "FORM_DATA",
+        formData: [
+          {
+            type: "FILE",
+            key: "asi",
+            value: "C:\\Users\\Dav\\Pictures\\asi2.o.png",
+            disabled: false
+          },
+          {
+            type: "TEXT",
+            key: "name",
+            value: "asi",
+            disabled: false
+          },
+          {
+            type: "TEXT",
+            key: "password",
+            value: "asdaf",
+            disabled: false
+          }
+        ]
       }
     },
     {
       id: "9aabb152-26ad-4d97-bc2f-4a6445e9f3ec",
       name: "Login",
-      method: "POST"
+      method: "POST",
+      url: "http://localhost:3000/api/mobile/1/user.login",
+      headers: [
+        {
+          key: "Content-Type",
+          value: "application/json"
+        },
+        {
+          disabled: true
+        }
+      ],
+      body: {
+        type: "JSON",
+        raw: '{\
+    "name": "D",\
+    "password": "Alma"\
+}'
+      },
+      testScript: 'jc.globalVariables.setEnv("token", jc.response.json())'
     }
   ]
 }
