@@ -1,6 +1,13 @@
+import MySqlRepository from "./drizzle-repository/my-sql-repository";
+import {SchemaType} from "../app/schema-type";
+import * as schema from "../app/schema";
+import {like, sql} from "drizzle-orm";
+
 class File{}
 
-export default class AttachmentHandler {
+
+
+export default class Collection {
     purge() {
     }
     add(file:File, name:string){
@@ -12,3 +19,4 @@ export default class AttachmentHandler {
 
     }
 }
+

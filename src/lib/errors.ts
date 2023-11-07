@@ -1,6 +1,6 @@
 import {createErrorData, preprocessErrorTree} from "./error/preprocess-error-tree";
 import {z} from "zod";
-import CommandHandler from "./express-command-api/command-handler";
+import CommandHandler from "./x-com-api/command-handler";
 
 export const blitzError = {
 	command: {

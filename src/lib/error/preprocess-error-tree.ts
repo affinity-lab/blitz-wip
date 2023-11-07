@@ -1,5 +1,5 @@
 import {BlitzError} from "./blitz-error";
-import {snakeCase} from "change-case-all"
+import {snakeCase} from "change-case-all";
 
 export function preprocessErrorTree(errors: Record<string, any>, prefix: string = ""): void {
 	for (const prop of Object.getOwnPropertyNames(errors)) {
@@ -11,8 +11,7 @@ export function preprocessErrorTree(errors: Record<string, any>, prefix: string 
 			errors[prop] = (...args: Array<any>) => {
 				const errorData: ErrorData = {code, ...originalMethod(...args)};
 				if (errorData.message === undefined) errorData.message = code;
-				const error: BlitzError = new BlitzError(errorData.message, code, errorData.details, errorData.httpResponseCode, errorData.silent);
-				return error;
+				return new BlitzError(errorData.message, code, errorData.details, errorData.httpResponseCode, errorData.silent);
 			};
 		}
 	}

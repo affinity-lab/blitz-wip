@@ -16,34 +16,29 @@ import multer from "multer";
 /* Wrap the whole process into a async function */
 (async () => {
 
-    /* Create a database connection, and store the reference in the STORAGE object */
-    STORAGE["db"] = drizzle(await mysql.createConnection(cfg.database.url), {mode: "default", schema, logger: true});
+	/* Create a database connection, and store the reference in the STORAGE object */
+	STORAGE["db"] = drizzle(await mysql.createConnection(cfg.database.url), {mode: "default", schema, logger: true});
 
-    /* Run database migrations */
-    await migrate(STORAGE["db"], {migrationsFolder: cfg.database.migration});
+	/* Run database migrations */
+	await migrate(STORAGE["db"], {migrationsFolder: cfg.database.migration});
 
-    /* Create the express express-command-api */
-    const app = express();
-    app.use(extendExpressRequest()); // extend request with custom properties
-    app.use(cors<cors.CorsRequest>()); // enable cors
-    app.use(express.json()); // enable json
-    app.use(multer().any()); // enable json
+	/* Create the x-com-api */
+	const app = express();
+	app.use(extendExpressRequest); // extend request with custom properties
+	app.use(cors<cors.CorsRequest>()); // enable cors
+	app.use(express.json()); // enable json
+	app.use(multer().any()); // enable json
 
-    /* Add /api endpoint with the cmdResolver */
-    let cmdResolver = require("./app/cmd-resolver").default;
-    app.post("/api/:app/:version/:cmd", async (req, res) => {
-        res.json(await cmdResolver.handle(
-            req.params.app,
-            parseInt(req.params.version),
-            req.params.cmd,
-            req
-        ));
-    });
+	/* Add /api endpoint with the commandResolver */
+	let commandResolver = require("./app/command-resolver").default;
+	app.post("/api/:app/:version/:cmd", async (req, res) => {
+		res.json(await commandResolver.handle(req.params.app, parseInt(req.params.version), req.params.cmd, req));
+	});
 
-    /* Add exception handler to catch all exceptions*/
-    app.use(exceptionHandler(logger));
+	/* Add exception handler to catch all exceptions*/
+	app.use(exceptionHandler(logger));
 
-    /* Start the express-command-api */
-    app.listen(cfg.serverPort, () => console.log(`Example app listening on port http://localhost:${cfg.serverPort}`));
+	/* Start the x-com-api */
+	app.listen(cfg.serverPort, () => console.log(`Example app listening on port http://localhost:${cfg.serverPort}`));
 
 })();

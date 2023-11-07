@@ -1,12 +1,13 @@
 import repository from "../app/repository";
-import {Command, CommandSet, CommandSetClient} from "../lib/express-command-api/command";
+import {Command} from "../lib/x-com-api/x-com-command";
+import {XCom, XComClient} from "../lib/x-com-api/x-com-api";
 import {Client, clients} from "../app/clients";
 import {Request} from "express";
 import {passwordService} from "../services/password-service";
 import crypto from "crypto";
 import {appError} from "../app/errors";
-import {CommandSanitize} from "../lib/express-command-api-saintize/command-sanitize";
-import {CommandValidate} from "../lib/express-command-api-validate-zod/command-validate";
+import {CommandSanitize} from "../lib/x-com-saintize/command-sanitize";
+import {CommandValidate} from "../lib/x-com-validate-zod/command-validate";
 import {z} from "zod";
 
 const fv = {
@@ -17,9 +18,9 @@ const fv = {
 	}
 };
 
-@CommandSet("user")
-@CommandSetClient(clients.mobile, 1)
-export default class UserCmd {
+@XCom("user")
+@XComClient(clients.mobile, 1)
+export default class UserXCom {
 
 	@Command("doesExist")
 	async getByEmail(args: { email: string }): Promise<boolean> {

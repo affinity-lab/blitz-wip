@@ -1,10 +1,10 @@
 import {CacheOptions, CommandFunc, CommandSet, Files} from "./types";
-import {CommandSetConfig} from "./command";
 import {Request} from "express";
 import CommandHandler from "./command-handler";
 import {blitzError} from "../errors";
 import {fatalError} from "../error/fatal-error";
 import RequestParser from "./request-parser";
+import {XComConfig} from "./x-com-api";
 
 
 type TResolvers =
@@ -42,7 +42,7 @@ export default class CommandResolver {
 	}
 
 	protected parse() {
-		const cmdSetsConfig: Array<CommandSetConfig> = CommandSetConfig.getConfigsFromCommandSets(this.commandSets);
+		const cmdSetsConfig: Array<XComConfig> = XComConfig.getConfigsFromCommandSets(this.commandSets);
 		for (const cmdSetConfig of cmdSetsConfig) {
 			const defaultAuthenticated = (cmdSetConfig.authenticated === undefined ? false : cmdSetConfig.authenticated);
 			for (const cmdKey in cmdSetConfig.cmdConfigs) {

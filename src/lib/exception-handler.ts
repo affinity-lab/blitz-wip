@@ -7,7 +7,7 @@ export function exceptionHandler(logger: Logger) {
         if (error instanceof BlitzError) {
             res.status(error.httpResponseCode);
             logger.error(`${req.id}: ${error.message}`);
-            res.json(error);
+			res.json(error);
         } else {
             res.status(500);
             logger.error(`${req.id}: ${error}`);

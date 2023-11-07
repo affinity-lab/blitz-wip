@@ -18,3 +18,9 @@ export type CommandFunc = (args: Args, req: Request, files: Files) => Promise<an
 export interface IRequestParser {
 	parse(req: Request): { type: string, args: Record<string, any>, files: Files };
 }
+
+export interface IClient {
+	readonly name: string;
+	checkApiAccess(req: Request): boolean;
+	getAuthenticated(req: Request): undefined | string;
+}

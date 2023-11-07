@@ -1,6 +1,6 @@
-import {IClient} from "../lib/express-command-api/client";
 import {Jwt} from "../lib/jwt";
 import {Request} from "express";
+import {IClient} from "../lib/x-com-api/types";
 
 export class Client implements IClient {
 	readonly jwt: Jwt<unknown>;

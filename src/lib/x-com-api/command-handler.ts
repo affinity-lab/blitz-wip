@@ -1,5 +1,4 @@
-import {CacheOptions, CommandFunc} from "./types";
-import {IClient} from "./client";
+import {CacheOptions, CommandFunc, IClient} from "./types";
 import {Request} from "express";
 import crypto from "crypto";
 import {blitzError} from "../errors";

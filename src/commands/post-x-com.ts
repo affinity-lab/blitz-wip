@@ -1,14 +1,13 @@
 import repository from "../app/repository";
-import {Command, CommandAuthenticated, CommandSet, CommandSetAuthenticated, CommandSetClient} from "../lib/express-command-api/command";
-import {Client, clients} from "../app/clients";
+import {Command, CommandAuthenticated} from "../lib/x-com-api/x-com-command";
+import {XCom, XComAuthenticated, XComClient} from "../lib/x-com-api/x-com-api";import {Client, clients} from "../app/clients";
 import {Request} from "express";
 import {Jwt} from "../lib/jwt";
 
-@CommandSet("post")
-@CommandSetClient(clients.mobile, [1, 2])
-@CommandSetAuthenticated(false)
-
-export default class PostCmd {
+@XCom("post")
+@XComClient(clients.mobile, [1, 2])
+@XComAuthenticated(false)
+export default class PostXCom {
 	@Command()
 	@CommandAuthenticated()
 	async get(args: { id: number }, req: Request) {
