@@ -23,12 +23,16 @@ export class Jwt<T> {
 	};
 
 	static getStringContent(token: string | undefined) {
-		if(!token) return undefined;
-		return atob(token.split('.')[1]);
+		if (!token) return undefined;
+		try {
+			return atob(token.split(".")[0]);
+		} catch (e) {
+			return undefined;
+		}
 	}
 
 	static getContent(token: string | undefined) {
-		if(!token) return undefined;
+		if (!token) return undefined;
 		try {
 			JSON.parse(this.getStringContent(token)!);
 		} catch (e) {

@@ -1,8 +1,8 @@
-import Cache, {type KeyValue} from "./cache";
+import BlitzCache, {type KeyValue} from "./blitz-cache";
 import {Redis} from "ioredis";
 
 
-export default class CacheWithRedis<T = any> extends Cache<T> {
+export default class CacheWithRedis<T = any> extends BlitzCache<T> {
     constructor(private cache: Redis, ttl: number, prefix?: string) {
         super(ttl, prefix);
     }

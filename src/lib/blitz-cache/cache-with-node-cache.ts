@@ -1,8 +1,8 @@
 import NodeCache, {ValueSetItem} from "node-cache";
-import Cache, {type KeyValue} from "./cache";
+import BlitzCache, {type KeyValue} from "./blitz-cache";
 
 
-export default class CacheWithNodeCache<T = any> extends Cache<T> {
+export default class CacheWithNodeCache<T = any> extends BlitzCache<T> {
 	constructor(private cache: NodeCache, ttl: number, prefix?: string) {
 		super(ttl, prefix);
 	}

@@ -15,23 +15,23 @@ export class Logger {
 	}
 
 	debug(message: string) {
-		if(this.minLogLevel <= 0) this.write(new Date().toISOString() + " [DEBUG] " + message);
+		if(this.minLogLevel <= 0) this.write(new Date().toISOString() + " [DBG] " + message);
 	}
 
 	info(message: string) {
-		if(this.minLogLevel <= 1) this.write(new Date().toISOString() + " [INFO] " + message);
+		if(this.minLogLevel <= 1) this.write(new Date().toISOString() + " [INF] " + message);
 	}
 
 	warning(message: string) {
-		if(this.minLogLevel <= 2) this.write(new Date().toISOString() + " [WARN] " + message);
+		if(this.minLogLevel <= 2) this.write(new Date().toISOString() + " [WRN] " + message);
 	}
 
 	error(message: string) {
-		if(this.minLogLevel <= 3) this.write(new Date().toISOString() + " [ERROR] " + message);
+		if(this.minLogLevel <= 3) this.write(new Date().toISOString() + " [ERR] " + message);
 	}
 
 	fatal(message: string) {
-		if(this.minLogLevel <= 4) this.write(new Date().toISOString() + " [FATAL] " + message);
+		if(this.minLogLevel <= 4) this.write(new Date().toISOString() + " [FTL] " + message);
 	}
 }
 

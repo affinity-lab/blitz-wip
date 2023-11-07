@@ -1,35 +1,36 @@
 import repository from "../app/repository";
-import {CommandSet} from "../lib/server/command/types";
-import cmd from "../lib/server/command/cmd";
-import {clients} from "../app/clients";
+import {Command, CommandAuthenticated, CommandSet, CommandSetAuthenticated, CommandSetClient} from "../lib/express-command-api/command";
+import {Client, clients} from "../app/clients";
 import {Request} from "express";
-import {IClient} from "../lib/client/client";
+import {Jwt} from "../lib/jwt";
 
-@cmd.set("post")
-@cmd.set.Client(clients.mobile, [1, 2])
-@cmd.set.Authenticated(false)
-export default class PostCmd implements CommandSet {
-	@cmd()
-	@cmd.Authenticated()
-	async get(args: {id: number}, req: Request) {
+@CommandSet("post")
+@CommandSetClient(clients.mobile, [1, 2])
+@CommandSetAuthenticated(false)
+
+export default class PostCmd {
+	@Command()
+	@CommandAuthenticated()
+	async get(args: { id: number }, req: Request) {
 		await guard.auth(req);
-		let post = await repository.post.get(args.id)
-		let user = await repository.user.get(post!.authorId!)
-		return {post, author: user}
+		let post = await repository.post.get(args.id);
+		let user = await repository.user.get(post!.authorId!);
+		return {post, author: user};
 
-		// return repository.post.getPost(args.id);
+		// return drizzle-repository.post.getPost(args.id);
 	}
 }
 
 
 const guard = {
-	auth : async (req: Request) => {
-		let userId;
+	auth: async (req: Request) => {
+		let userId: number | undefined;
 		try {
-			userId = (req.context.get("client") as IClient).jwt.decode(req.context.get("authenticated"));
+			userId = ((req.context.get("client") as Client).jwt as Jwt<number>).decode(req.context.get("authenticated"));
 		} catch (e) {
-			throw Error("403-token error")
+			throw Error("403-token error");
 		}
-		if(!await repository.user.get(userId)) throw Error("401-user not exists")
+		if (userId === undefined) throw Error("401-user not exists");
+		if (!await repository.user.get(userId)) throw Error("401-user not exists");
 	}
-}
+};

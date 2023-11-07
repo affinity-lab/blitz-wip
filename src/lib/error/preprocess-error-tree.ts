@@ -31,4 +31,3 @@ export function createErrorData(
 	if (typeof message !== "undefined") error.message = message;
 	return error;
 }
-

@@ -1,5 +1,5 @@
 import path from "path";
-import {fatalError} from "../exeption-handling/fatal-error";
+import {fatalError} from "../error/fatal-error";
 
 
 export class Env {

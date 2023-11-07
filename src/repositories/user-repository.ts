@@ -1,5 +1,5 @@
 import {and, eq, sql} from "drizzle-orm";
-import MySqlRepository from "../lib/repository/my-sql-repository";
+import MySqlRepository from "../lib/drizzle-repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {passwordService} from "../services/password-service";
 import {SchemaType} from "../app/schema-type";

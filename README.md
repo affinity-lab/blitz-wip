@@ -11,4 +11,5 @@ https://plugins.jetbrains.com/plugin/21173-jetclient--the-ultimate-rest-client
 - file management
   - a commandok már fogadnak json és multiformdata postokat is és meg is kapják a küldött fájlokat
   - a repositorykban kell implementálni a fájlkezelőket
-- Graphane szerű Error system (kódok)
+- injectable validator vagy csak kódszintű validáció
+- on request hooks

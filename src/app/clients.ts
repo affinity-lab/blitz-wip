@@ -1,4 +1,4 @@
-import {IClient} from "../lib/client/client";
+import {IClient} from "../lib/express-command-api/client";
 import {Jwt} from "../lib/jwt";
 import {Request} from "express";
 
@@ -14,14 +14,14 @@ export class Client implements IClient {
 	}
 
 	getAuthenticated(req: Request): undefined | string {
-		let auth = req.getHeader("authorization")?.substr("bearer ".length).trim();
+		let auth = req.getHeader("authorization")?.substring("bearer ".length).trim();
 		return auth || undefined;
 	}
 }
 
 export const clients = {
-    mobile: new Client("mobile", "000-111-222-333-444-555-666-777-888", "SECRET"),
-    admin: new Client("admin", "000-111-222-333-444-555-666-777-888", "SECRET"),
-    web: new Client("web", "000-111-222-333-444-555-666-777-888", "SECRET")
+    mobile: new Client("mobile", "test", "SECRET"),
+    admin: new Client("admin", "test", "SECRET"),
+    web: new Client("web", "test", "SECRET")
 };
 

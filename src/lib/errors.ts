@@ -1,7 +1,6 @@
-import {createErrorData, preprocessErrorTree} from "./exeption-handling/preprocess-error-tree";
-import {IClient} from "./client/client";
+import {createErrorData, preprocessErrorTree} from "./error/preprocess-error-tree";
 import {z} from "zod";
-import Command from "./server/command/command";
+import CommandHandler from "./express-command-api/command-handler";
 
 export const blitzError = {
 	command: {
@@ -9,7 +8,6 @@ export const blitzError = {
 		clientNotAuthorized: () => createErrorData("client not authorized", undefined, 403),
 		userNotAuthenticated: () => createErrorData("user not authorized", undefined, 401),
 		requestTypeNotAccepted: ()=>createErrorData("request type not accepted"),
-		validationError:(command:Command, issues:Array<z.ZodIssue>)=>createErrorData(`Error when calling ${command.client.name}.${command.version}/${command.command}`)
 	}
 };
 

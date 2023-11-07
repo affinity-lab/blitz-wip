@@ -1,4 +1,4 @@
-import {createErrorData, preprocessErrorTree} from "../lib/exeption-handling/preprocess-error-tree";
+import {createErrorData, preprocessErrorTree} from "../lib/error/preprocess-error-tree";
 
 
 export const appError = {
