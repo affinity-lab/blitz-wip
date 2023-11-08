@@ -1,5 +1,5 @@
 import repository from "../app/repository";
-import {Command} from "../lib/x-com-api/x-com-command";
+import {Command, CommandCache, CommandClient} from "../lib/x-com-api/x-com-command";
 import {XCom, XComClient} from "../lib/x-com-api/x-com-api";
 import {Client, clients} from "../app/clients";
 import {Request} from "express";
@@ -19,14 +19,19 @@ const fv = {
 };
 
 @XCom("user")
-@XComClient(clients.mobile, 1)
 export default class UserXCom {
 
-	@Command("doesExist")
-	async getByEmail(args: { email: string }): Promise<boolean> {
+	@Command()
+	@CommandClient(clients.mobile, 1)
+	async doesExist(args: { email: string }): Promise<boolean> {
 		return repository.user.getByEmail(args.email).then(r => !!r);
 	}
 
+	@Command("doesExists")
+	@CommandClient(clients.mobile, 2)
+	async doesExist2(args: { email: string }): Promise<boolean> {
+		return repository.user.getByEmail(args.email).then(r => !!r);
+	}
 
 	@Command("create")
 	@CommandSanitize((args: Record<string, any>) => {
@@ -34,6 +39,7 @@ export default class UserXCom {
 		return args;
 	})
 	@CommandValidate(z.object({name: z.string().length(3)}))
+	@CommandClient(clients.mobile, [1,2])
 	async createUser(args: { name: string, email: string, password: string, verificationCode: string }) {
 		if (await repository.verification.verify(args.verificationCode, args.email)) {
 			return repository.user.insert({name: args.name, email: args.email, password: await passwordService.hash(args.password)});
@@ -42,6 +48,7 @@ export default class UserXCom {
 	}
 
 	@Command()
+	@CommandClient(clients.mobile, 1)
 	async createVerification(args: { email: string }): Promise<boolean> {
 		let code = crypto.randomUUID();
 		await repository.verification.insert({email: args.email, code});
@@ -51,6 +58,7 @@ export default class UserXCom {
 	}
 
 	@Command()
+	@CommandClient(clients.mobile, 1)
 	async login(args: { name: string, password: string }, req: Request): Promise<undefined | string> {
 		let res = await repository.user.auth(args.name, args.password);
 		if (!res) return undefined;
