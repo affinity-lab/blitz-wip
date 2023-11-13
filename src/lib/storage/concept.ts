@@ -92,10 +92,10 @@ class Storage {
 		return newName;
 	}
 
-	async get(name: string, id: number): Promise<Attachments>;
+	async get(name: string, id: number, res?: { found?: "db" | "cache" | false }): Promise<Attachments>;
 	async get(name: string, id: Array<number>): Promise<Record<number, Attachments>>;
 	async get(name: string, id: number | Array<number>): Promise<Attachments | Record<number, Attachments>> ;
-	async get(name: string, id: number | Array<number>): Promise<Attachments | Record<number, Attachments>> {
+	async get(name: string, id: number | Array<number>, res: { found?: "db" | "cache" | false } = {}): Promise<Attachments | Record<number, Attachments>> {
 		if (Array.isArray(id)) {
 			if (id.length === 0) return [];
 			let records: Array<AttachmentRecord>;
@@ -120,14 +120,19 @@ class Storage {
 		} else {
 			//read from cache
 			let record: AttachmentRecord | undefined = await this.cache?.get(this.key(name, id));
-			if (record !== undefined) return record.data;
+			if (record !== undefined) {
+				res.found = "cache";
+				return record.data;
+			}
 			//read from db
 			const records: Array<AttachmentRecord> = await this.queries.get.execute({name, id});
 			if (records && records.length > 0) {
 				record = records[0];
+				res.found = "db";
 				this.cache?.set({key: this.key(name, id), value: record});
 				return record.data;
 			}
+			res.found = false;
 			return [];
 		}
 	}
@@ -166,8 +171,23 @@ class Storage {
 		let filename = Path.basename(file.file);
 		filename = this.sanitizeFilename(filename);
 		filename = this.getUniqueFilename(path, filename);
-		// todo: copy the file
-		// todo: create or update the record
+		fs.copyFileSync(file.file, Path.join(path, filename));
+		let res: { found?: "db" | "cache" | false } = {};
+		const attachments = await this.get(name, id, res);
+		attachments.push({
+			name: filename,
+			size: fs.statSync(file.file).size,
+			metadata
+		});
+		if (res.found === false) {
+			await this.db.insert(this.schema).values({name, itemId: id, data: JSON.stringify(attachments)}).execute();
+		} else {
+			await this.db.update(this.schema).set({data: JSON.stringify(attachments)}).where(and(
+				sql`name = ${sql.placeholder("name")}`,
+				sql`itemId = ${sql.placeholder("id")}`
+			));
+			this.cache?.del(this.key(name, id));
+		}
 		file.release();
 	}
 
@@ -197,6 +217,7 @@ class Storage {
 		await this.updateRecord(name, id, attachments);
 	}
 }
+
 
 class Collection<METADATA extends Record<string, any>> {
 	constructor(
