@@ -1,11 +1,13 @@
 import {MySqlTable, MySqlUpdateSetSource, PreparedQuery} from "drizzle-orm/mysql-core";
-import {InferInsertModel, InferSelectModel, sql} from "drizzle-orm";
+import {getTableName, InferInsertModel, InferSelectModel, sql} from "drizzle-orm";
 import {MySql2Database, MySqlRawQueryResult} from "drizzle-orm/mysql2";
 import BlitzCache, {KeyValue} from "../blitz-cache/blitz-cache";
 import * as crypto from "crypto";
 
 
-export default class MySqlRepository<S extends Record<string, any>, T extends MySqlTable> {
+export default class MySqlRepository<S extends Record<string, any> = any, T extends MySqlTable = any> {
+
+	public get name(): string {return getTableName(this.schema);}
 
 	static cache(ttl?: number): MethodDecorator {
 		return (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {

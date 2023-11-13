@@ -1,5 +1,5 @@
 import AttachmentEntity from "./attachment-entity";
-import {Attachment, Attachments, Entity, File} from "./types";
+import {Attachment, AttachmentWithId, Collections, Entity, File} from "./types";
 
 export type _WRITABLE_AttachmentCollection = {
 	attachmentEntity: AttachmentEntity<any, any>,
@@ -14,26 +14,57 @@ export default class AttachmentCollection {
 
 	async add(id: number, file: File | Array<File>) { await this.attachmentEntity.add(id, this.name, file);}
 
-	async get(id: Array<number>): Promise<Record<number, Attachments>>;
-	async get(id: number): Promise<Attachments>;
+	async get(id: Array<number>): Promise<Record<number, Collections>>;
+	async get(id: number): Promise<Collections>;
 	async get(id: number | Array<number>) { return await this.attachmentEntity.get(id, this.name);}
 
-	// todo: multiple signatures
-	async with(objects: Entity | Array<Entity>, key: string = "attachments") { return await this.attachmentEntity.with(objects, key, this.name);}
+	async with(object: Entity, key?: string): Promise<Entity>;
+	async with(objects: Array<Entity>, key?: string): Promise<Array<Entity>> ;
+	async with(objects: Entity | Array<Entity>, key: string = "$"): Promise<Entity | Array<Entity>> {
+		return await this.attachmentEntity.with(objects, key, this.name);
+	}
 
-	// todo: implement it
-	async first(id: Array<number>): Promise<Record<number, Attachment>>;
+	async first(ids: Array<number>): Promise<AttachmentWithId>;
 	async first(id: number): Promise<Attachment | undefined>;
-	async first(id: number | Array<number>) { return await this.attachmentEntity.get(id, this.name);}
+	async first(ids: number | Array<number>): Promise<AttachmentWithId | Attachment | undefined>;
+	async first(ids: number | Array<number>): Promise<AttachmentWithId | Attachment | undefined> {
+		if (Array.isArray(ids)) {
+			const collectionsByEntity = await this.attachmentEntity.get(ids, this.name);
+			const res: AttachmentWithId = {};
+			for (const id in collectionsByEntity) {
+				const collection = collectionsByEntity[id][this.name];
+				res[id] = collection.length === 0 ? undefined : collection[0];
+			}
+			return res;
+		} else {
+			const collections = await this.attachmentEntity.get(ids, this.name);
+			const collection = collections[this.name];
+			return collection.length === 0 ? undefined : collection[0];
+		}
+	}
 
-	// todo: withFirst(objects: Entity | Array<Entity>, key: string = "attachments")
+	async withFirst(object: Entity, key: string): Promise<Entity>;
+	async withFirst(objects: Array<Entity>, key: string): Promise<Array<Entity>>;
+	async withFirst(objects: Entity | Array<Entity>, key: string): Promise<Entity | Array<Entity>> {
+		if (Array.isArray(objects)) {
+			const firsts = await this.first(objects.map(object => object.id));
+			for (const object of objects) object[key] = firsts[object.id];
+			return objects;
+		} else {
+			objects[key] = await this.first(objects.id);
+			return objects;
+		}
+	}
 
+	async delete(id: number, filename: string) {
+		await this.attachmentEntity.delete(id, this.name, filename);
+	}
 
-	async purge(id: number) { await this.attachmentEntity.purge(id, this.name);}
+	async rename(id: number, from: string, to: string) {
+		await this.attachmentEntity.rename(id, this.name, from, to);
+	}
 
-	async delete(id: number, filename: string) { await this.attachmentEntity.delete(id, this.name, filename);}
-
-	async rename(id: number, from: string, to: string) { await this.attachmentEntity.rename(id, this.name, from, to);}
-
-	async position(id: number, filename: string, position: number) {await this.attachmentEntity.position(id, this.name, filename, position);}
+	async position(id: number, filename: string, position: number) {
+		await this.attachmentEntity.position(id, this.name, filename, position);
+	}
 }

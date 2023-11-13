@@ -12,9 +12,19 @@ export default abstract class BlitzCache<T = any> {
 	}
 
 
-	getReader() { return (handler: () => any, key: string, ttl: number): Promise<any> => this.read(handler, key, ttl);}
+	getReader(ttl?: number) {
+		const _ttl = ttl === undefined ? this.ttl : ttl;
+		return (handler: () => any, key: string | number, ttl: number = _ttl): Promise<any> => {
+			return this.read(handler, key, ttl);
+		};
+	}
 
-	async read(handler: () => any, key: string, ttl: number): Promise<any> {
+	getInvalidator() {
+		return (key: string | number) => this.del(key);
+	}
+
+	async read(handler: () => any, key: string | number, ttl?: number): Promise<any> {
+		ttl = ttl === undefined ? this.ttl : ttl;
 		const cached = await this.get(key);
 		if (cached !== undefined) return cached;
 		const value = await handler();

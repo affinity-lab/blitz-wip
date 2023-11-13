@@ -1,10 +1,12 @@
 import {CacheOptions, CommandFunc, CommandSet, Files} from "./types";
-import {Request} from "express";
+import {Request, Response} from "express";
 import CommandHandler from "./command-handler";
 import {blitzError} from "../errors";
 import {fatalError} from "../error/fatal-error";
 import RequestParser from "./request-parser";
 import {XComConfig} from "./x-com-api";
+import {ResponseType} from "./responseType";
+import {EventEmitter} from "events";
 
 
 type TResolvers =
@@ -20,24 +22,24 @@ type CacheReaderFunc = (handler: () => any, key: string, ttl: number) => Promise
 
 type CommandResolverOptions = {
 	requestParser: RequestParser,
-	onRequestAccepted: (req: Request) => void,
-	cacheReader: CacheReaderFunc
+	cacheReader: CacheReaderFunc,
+	eventEmitter: EventEmitter
 }
 
 export default class CommandResolver {
 
 	readonly resolvers: TResolvers = {};
 	readonly requestParser: RequestParser;
-	readonly onRequestAccepted: ((req: Request) => void) | undefined;
 	readonly cacheReader: CacheReaderFunc | undefined;
+	readonly eventEmitter: EventEmitter | undefined;
 
 	constructor(
 		private commandSets: Array<CommandSet>,
 		options: Partial<CommandResolverOptions> = {}
 	) {
 		this.requestParser = options.requestParser === undefined ? new RequestParser() : options.requestParser;
-		this.onRequestAccepted = options.onRequestAccepted;
 		this.cacheReader = options.cacheReader;
+		this.eventEmitter = options.eventEmitter;
 		this.parse();
 	}
 
@@ -54,7 +56,9 @@ export default class CommandResolver {
 				let func = cmdConfig.func;
 				let authenticated: boolean = cmdConfig.authenticated === undefined ? defaultAuthenticated : cmdConfig.authenticated;
 				const command = cmdSetConfig.alias + "." + cmdConfig.alias;
-				const handler = async (args: Record<string, any>, req: Request, files: Files) => await (target as { [key: string]: CommandFunc })[func](args, req, files);
+				const handler = async (args: Record<string, any>, req: Request, files: Files) => await (target as {
+					[key: string]: CommandFunc
+				})[func](args, req, files);
 
 
 				/* Global clients */
@@ -114,7 +118,7 @@ export default class CommandResolver {
 		this.resolvers[cmd.client.name][cmd.version][cmd.command] = cmd;
 	}
 
-	async handle(client: string, version: number, command: string, req: Request) {
+	async handle(client: string, version: number, command: string, req: Request, res: Response) {
 		const c = this.resolvers[client];
 		if (c === undefined) throw blitzError.command.notFound(`client not found: ${client}`); // Client not found
 		const v = c[version];
@@ -122,6 +126,11 @@ export default class CommandResolver {
 		const cmd = v[command];
 		if (cmd === undefined) throw blitzError.command.notFound(`command not found ${client}.${version}/${command}`); // Command not found
 
-		return cmd.handle(req);
+		const result = await cmd.handle(req, res);
+		if (result instanceof ResponseType) {
+			await result.send(res);
+		} else {
+			res.json(result);
+		}
 	}
 }

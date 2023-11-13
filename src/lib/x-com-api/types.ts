@@ -6,7 +6,8 @@ export type Args = Record<string, any>
 export type CacheOptions = {
 	ttl: number,
 	user?: boolean,
-	cttl?: number
+	cttl?: number,
+	key?: string | ((args: Record<string, any>) => string)
 }
 
 export type CommandSet = {};

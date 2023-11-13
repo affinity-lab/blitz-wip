@@ -19,13 +19,13 @@ export class PostRepository extends MySqlRepository<SchemaType, typeof schema.po
 
 }
 
-const attachments = {
-	post: new AttachmentEntity(attachmentHandler, schema.post, {
-		avatar: new AttachmentCollection("helo")
-	})
-};
+// const attachments = {
+// 	post: new AttachmentEntity(attachmentHandler, schema.post, {
+// 		avatar: new AttachmentCollection("helo")
+// 	})
+// };
 
-repository.post.beforeDelete((id:number)=>attachments.post.purge(id))
+//repository.post.beforeDelete((id:number)=>attachments.post.purge(id))
 
 // export const postAttachments = new AttachmentEntity(attachmentHandler, schema.post, {
 // 	avatar: new AttachmentCollection("helo")
