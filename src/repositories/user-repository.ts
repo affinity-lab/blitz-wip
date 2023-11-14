@@ -3,13 +3,17 @@ import MySqlRepository from "../lib/drizzle-repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {passwordService} from "../services/password-service";
 import {SchemaType} from "../app/schema-type";
+import {DocumentCollection} from "../lib/storage/collections/document";
+import {eventEmitter} from "../services/event-emitter";
+import repository from "../app/repository";
+import {collectionStorage} from "../services/collection-storage";
 
 export class UserRepository extends MySqlRepository<SchemaType, typeof schema.user> {
 
-    private queries = {
-        getByEmail: this.db.query.user.findFirst({where: eq(schema.user.email, sql.placeholder("email")), columns: {password: false}}).prepare(),
-        auth: this.db.query.user.findFirst({where: and(eq(schema.user.email, sql.placeholder("email")), eq(schema.user.password, sql.placeholder("password"))), columns: {password: false}}).prepare(),
-    };
+	private queries = {
+		getByEmail: this.db.query.user.findFirst({where: eq(schema.user.email, sql.placeholder("email")), columns: {password: false}}).prepare(),
+		auth: this.db.query.user.findFirst({where: and(eq(schema.user.email, sql.placeholder("email")), eq(schema.user.password, sql.placeholder("password"))), columns: {password: false}}).prepare()
+	};
 
 	@MySqlRepository.store()
 	@MySqlRepository.cache(30)

@@ -3,6 +3,8 @@ import {getTableName, InferInsertModel, InferSelectModel, sql} from "drizzle-orm
 import {MySql2Database, MySqlRawQueryResult} from "drizzle-orm/mysql2";
 import BlitzCache, {KeyValue} from "../blitz-cache/blitz-cache";
 import * as crypto from "crypto";
+import {eventEmitter} from "../../services/event-emitter";
+import {DrizzleRepositoryEvents} from "./events";
 
 
 export default class MySqlRepository<S extends Record<string, any> = any, T extends MySqlTable = any> {
@@ -160,6 +162,8 @@ export default class MySqlRepository<S extends Record<string, any> = any, T exte
 		for (const handler of this.eventHandlers.beforeDelete) await handler(id);
 		const res: MySqlRawQueryResult = await this.baseQueries.del.execute({id});
 		const affectedRows = res[0].affectedRows;
+		eventEmitter.emit(DrizzleRepositoryEvents.Deleted, this, id)
+		console.log("EMITTED", id);
 		for (const handler of this.eventHandlers.afterDelete) await handler(id, affectedRows);
 	}
 }

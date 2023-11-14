@@ -1,6 +1,6 @@
 import {char, int, mysqlTable, serial, varchar, timestamp, json} from "drizzle-orm/mysql-core";
 import {relations} from "drizzle-orm";
-import {attachmentSchemaFactory} from "../lib/attachment/attachment-schema-factoy";
+import {storageSchemaFactory} from "../lib/storage/storage-schema-factory";
 
 export const post = mysqlTable("posts", {
 	id: serial("id").primaryKey(),
@@ -26,4 +26,4 @@ export const verification = mysqlTable("verification", {
 	created: timestamp("created").defaultNow()
 })
 
-export const attachment = attachmentSchemaFactory()
+export const storage = storageSchemaFactory();

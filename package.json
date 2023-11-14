@@ -8,6 +8,7 @@
     "dev": "npm run dev:tsx",
     "dev:tsx": "nodemon -w src --exec tsx ./src/index.ts",
     "dev:ts-node": "nodemon -w src --exec ts-node src/index.ts",
+    "gen": "npx drizzle-kit generate:mysql",
     "studio": "npx drizzle-kit studio --host 127.0.0.1",
     "build": "npx tsc",
     "prebuild": "rimraf ./dist",

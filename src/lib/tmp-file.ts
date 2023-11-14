@@ -3,15 +3,17 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-class TmpFile{
-	readonly uniqueDir:string;
-	constructor(readonly tmp: string, readonly filename: string, buffer:Buffer) {
+export default class TmpFile {
+	readonly uniqueDir: string;
+	constructor(readonly tmp: string, readonly file: string, buffer: Buffer) {
 		this.uniqueDir = crypto.randomUUID();
-		fs.mkdirSync(path.resolve(this.tmp, this.uniqueDir))
-		fs.writeFileSync(path.resolve(tmp, this.uniqueDir, filename), buffer);
+		this.file = path.resolve(tmp, this.uniqueDir, file);
+		fs.mkdirSync(path.resolve(this.tmp, this.uniqueDir));
+		fs.writeFileSync(this.file, buffer);
 	}
-	release(){
-		fs.unlinkSync(path.resolve(this.tmp, this.uniqueDir, this.filename))
-		fs.rmdirSync(path.resolve(this.tmp, this.uniqueDir))
+	release(): void | Promise<void> {
+		fs.unlinkSync(this.file);
+		fs.rmdirSync(path.resolve(this.tmp, this.uniqueDir));
 	}
+
 }
