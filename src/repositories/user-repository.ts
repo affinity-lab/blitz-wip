@@ -1,14 +1,14 @@
 import {and, eq, sql} from "drizzle-orm";
-import MySqlRepository from "../lib/drizzle-repository/my-sql-repository";
+import MySqlRepository from "../lib/blitz/repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {passwordService} from "../services/password-service";
 import {SchemaType} from "../app/schema-type";
-import {DocumentCollection} from "../lib/storage/collections/document";
-import {eventEmitter} from "../services/event-emitter";
-import repository from "../app/repository";
-import {collectionStorage} from "../services/collection-storage";
+import {DocumentCollection} from "../lib/blitz/storage/collections/document";
+import {ImageCollection} from "../lib/blitz/storage/collections/image";
 
 export class UserRepository extends MySqlRepository<SchemaType, typeof schema.user> {
+
+	public excludedFields = ["password"];
 
 	private queries = {
 		getByEmail: this.db.query.user.findFirst({where: eq(schema.user.email, sql.placeholder("email")), columns: {password: false}}).prepare(),
@@ -24,4 +24,7 @@ export class UserRepository extends MySqlRepository<SchemaType, typeof schema.us
 	async auth(email: string, pw: string) {
 		return this.queries.auth.execute({email, password: await passwordService.hash(pw)});
 	}
+
+	images: DocumentCollection = ImageCollection.factory(this, "images", {limit: 3, size: 1024 * 1024});
+	documents = DocumentCollection.factory(this, "documents", {limit: 3, size: 1024 * 1024});
 }

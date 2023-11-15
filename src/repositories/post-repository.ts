@@ -1,5 +1,5 @@
 import {like, sql} from "drizzle-orm";
-import MySqlRepository from "../lib/drizzle-repository/my-sql-repository";
+import MySqlRepository from "../lib/blitz/repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {SchemaType} from "../app/schema-type";
 

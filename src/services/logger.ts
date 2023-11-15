@@ -1,4 +1,4 @@
-import {Logger} from "../lib/logger";
+import {Logger} from "../lib/util/logger";
 
 
 const logger = new Logger(console.log)

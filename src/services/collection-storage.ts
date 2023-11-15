@@ -1,4 +1,4 @@
-import {CollectionStorage} from "../lib/storage/collection-storage";
+import {CollectionStorage} from "../lib/blitz/storage/collection-storage";
 import cfg from "./config";
 import {db} from "./async-storage/db";
 import {storage} from "../app/schema";

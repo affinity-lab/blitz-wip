@@ -1,16 +1,17 @@
 import repository from "../app/repository";
-import {Command, CommandClient} from "../lib/x-com-api/x-com-command";
-import {XCom} from "../lib/x-com-api/x-com-api";
 import {Client, clients} from "../app/clients";
 import {Request} from "express";
 import {passwordService} from "../services/password-service";
 import crypto from "crypto";
 import {appError} from "../app/errors";
-import {CommandSanitize} from "../lib/x-com-saintize/command-sanitize";
-import {CommandValidate} from "../lib/x-com-validate-zod/command-validate";
+import {CommandPreprocessArgs} from "../lib/x-com/decorators/command/command-preprocess-args";
+import {CommandValidateZod} from "../lib/x-com/decorators/command/command-validate-zod";
 import {z} from "zod";
-import {Files} from "../lib/x-com-api/types";
-import {userDocuments} from "../repositories/user-collections";
+import {Files} from "../lib/x-com/types";
+import {tmpFile} from "../services/tmp-file";
+import {XCom} from "../lib/x-com/decorators/api/x-com";
+import {CommandClient} from "../lib/x-com/decorators/command/command-client";
+import {Command} from "../lib/x-com/decorators/command/command";
 
 const fv = {
 	user: {
@@ -33,12 +34,12 @@ export default class UserXCom {
 	@Command("upload")
 	@CommandClient(clients.mobile, 1)
 	async upload(args: { id: number }, req: Request, files: Files): Promise<void> {
-		// const user = repository.user.get(args.id);
+		const user = repository.user.get(args.id);
+		repository.post.get(args.id);
 		// const file = tmpFile(files["file"][0].name, files["file"][0].buffer);
-		// await userDocuments.add(args.id, file);
-		// await userDocuments.setTitle(args.id, files["file"].at(-1)!.name, "FASZOMT");
-		userDocuments;
-		await repository.user.delete(1);
+		// await repository.user.documents.add(args.id, file);
+		// await repository.user.documents.setTitle(args.id, files["file"].at(-1)!.name, "FASZOMT");
+		// await repository.user.delete(1);
 	}
 
 	@Command("doesExists")
@@ -48,11 +49,11 @@ export default class UserXCom {
 	}
 
 	@Command("create")
-	@CommandSanitize((args: Record<string, any>) => {
+	@CommandPreprocessArgs((args: Record<string, any>) => {
 		args.valami = "hello";
 		return args;
 	})
-	@CommandValidate(z.object({name: z.string().length(3)}))
+	@CommandValidateZod(z.object({name: z.string().length(3)}))
 	@CommandClient(clients.mobile, [1, 2])
 	async createUser(args: { name: string, email: string, password: string, verificationCode: string }) {
 		if (await repository.verification.verify(args.verificationCode, args.email)) {

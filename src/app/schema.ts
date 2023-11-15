@@ -1,11 +1,12 @@
-import {char, int, mysqlTable, serial, varchar, timestamp, json} from "drizzle-orm/mysql-core";
+import {char, int, mysqlTable, serial, varchar, timestamp, json, text} from "drizzle-orm/mysql-core";
 import {relations} from "drizzle-orm";
-import {storageSchemaFactory} from "../lib/storage/storage-schema-factory";
+import {storageSchemaFactory} from "../lib/blitz/storage/storage-schema-factory";
 
 export const post = mysqlTable("posts", {
 	id: serial("id").primaryKey(),
 	title: varchar("title", {length: 255}),
-	authorId: int("authorId")
+	authorId: int("authorId"),
+	body: text("body")
 })
 
 export const postRelations = relations(post, ({ one }) => ({author: one(user, {fields: [post.authorId], references: [user.id]})}))

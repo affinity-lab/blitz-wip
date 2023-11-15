@@ -10,17 +10,17 @@ https://plugins.jetbrains.com/plugin/21173-jetclient--the-ultimate-rest-client
 # todo
 - file management
   + a commandok már fogadnak json és multiformdata postokat is és meg is kapják a küldött fájlokat
-  - file version
+  + file version
   - image
     - attachment options: 
-      - mimetypes
-      - maxSize
-      - limit
-      - image
-        - focus:entropy
-        - store AsWebP
-        - maxStorageSize (w/h)
+      + mimetypes
+      +maxSize
+      +limit
+      + image
+      - optimised image (store as webp)
+- static file server
 + Response cttl
 + Cache provided key (string/method with args)
 + response type somehow
+- mailer
 - scheduler app - egy ugyan ebben a környezetben futó app, de nem indít szervert, csak a schedulált taszkokat futtatja egy szálon!

@@ -57,6 +57,13 @@
       "when": 1699956806361,
       "tag": "0007_cooing_surge",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1699975695520,
+      "tag": "0008_premium_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

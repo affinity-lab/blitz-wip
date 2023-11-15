@@ -1,8 +1,7 @@
 import "reflect-metadata";
 import express, {Request} from "express";
-import {extendExpressRequest} from "./lib/extend-express-request";
+import {extendExpressRequest} from "./lib/x-com/extend-express-request";
 import cors from "cors";
-import {exceptionHandler} from "./lib/exception-handler";
 import "express-async-errors";
 import cfg from "./services/config";
 import logger from "./services/logger";
@@ -13,15 +12,20 @@ import * as schema from "./app/schema";
 import {migrate} from "drizzle-orm/mysql2/migrator";
 import multer from "multer";
 import {eventEmitter} from "./services/event-emitter";
-import {XComApiEvents} from "./lib/x-com-api/events";
-import {Jwt} from "./lib/jwt";
+import {XCOM_API_EVENTS} from "./lib/x-com/events";
+import {Jwt} from "./lib/util/jwt";
+import {XERROR} from "./lib/util/extended-error/events";
+import {exceptionHandler} from "./lib/util/extended-error/express-exception-handler";
 
 /* Wrap the whole process into a async function */
 (async () => {
-
 	eventEmitter.on(
-		XComApiEvents.RequestAccepted,
+		XCOM_API_EVENTS.REQUEST_ACCEPTED,
 		(req: Request) => logger.request(`${req.id}: (${req.context.get("request-type")}) ${req.url} - Authenticated: ${Jwt.getStringContent(req.context.get("authenticated"))}`)
+	);
+	eventEmitter.on(
+		XERROR.ERROR,
+		(error: any, req: Request) => logger?.error(`${req.id}: ${error}`)
 	);
 
 	/* Create a database connection, and store the reference in the STORAGE object */
@@ -47,7 +51,7 @@ import {Jwt} from "./lib/jwt";
 		);
 	});
 	/* Add exception handler to catch all exceptions*/
-	app.use(exceptionHandler(logger));
-	/* Start the x-com-api */
+	app.use(exceptionHandler(eventEmitter));
+	/* Start the x-com */
 	app.listen(cfg.serverPort, () => console.log(`Example app listening on port http://localhost:${cfg.serverPort}`));
 })();

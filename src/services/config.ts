@@ -1,5 +1,4 @@
-import {loadEnvVars} from "../lib/env/load-env-vars";
-import {Env} from "../lib/env/env";
+import {Env} from "../lib/util/env";
 
 
 class ConfigService {
@@ -34,7 +33,7 @@ class ConfigService {
 }
 
 const env: Env = new Env(
-	{...process.env, ...loadEnvVars("env.ini")},
+	{...process.env, ...Env.loadEnvVars("env.ini")},
 	{key: "ENVIRONMENT", default: "PROD"},
 	{"PROD": undefined, "DEV": "DEV", "TEST": "TEST"}
 );

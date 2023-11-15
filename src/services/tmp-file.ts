@@ -1,4 +1,4 @@
-import TmpFile from "../lib/tmp-file";
+import TmpFile from "../lib/util/tmp-file";
 import {Buffer} from "buffer";
 import cfg from "./config";
 
