@@ -1,4 +1,4 @@
-import {MySql2Database} from "drizzle-orm/mysql2";
+import {type MySql2Database} from "drizzle-orm/mysql2";
 import * as schema from "../../app/schema";
 import {STORAGE} from "../storage";
 

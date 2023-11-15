@@ -3,7 +3,7 @@ import {Request, Response} from "express";
 import crypto from "crypto";
 import {xComError} from "./errors";
 import CommandResolver from "./command-resolver";
-import {eventEmitter} from "../../services/event-emitter";
+import {eventEmitter} from "../../../src/services/event-emitter";
 import {XCOM_API_EVENTS} from "./events";
 
 export default class CommandHandler {

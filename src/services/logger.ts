@@ -1,6 +1,6 @@
-import {Logger} from "../lib/util/logger";
+import {Logger} from "@affinity-lab/affinity-util";
 
 
-const logger = new Logger(console.log)
+const logger = new Logger(console.log);
 
 export default logger;

@@ -1,6 +1,6 @@
-import {Jwt} from "../lib/util/jwt";
 import {Request} from "express";
-import {IClient} from "../lib/x-com/types";
+import {IClient} from "@affinity-lab/x-com";
+import {Jwt} from "@affinity-lab/affinity-util";
 
 export class Client implements IClient {
 	readonly jwt: Jwt<unknown>;

@@ -1,12 +1,8 @@
 import repository from "../app/repository";
 import {Client, clients} from "../app/clients";
 import {Request} from "express";
-import {Jwt} from "../lib/util/jwt";
-import {XCom} from "../lib/x-com/decorators/api/x-com";
-import {XComClient} from "../lib/x-com/decorators/api/x-com-client";
-import {XComAuthenticated} from "../lib/x-com/decorators/api/x-com-authenticated";
-import {CommandAuthenticated} from "../lib/x-com/decorators/command/command-authenticated";
-import {Command} from "../lib/x-com/decorators/command/command";
+import {Jwt} from "@affinity-lab/affinity-util";
+import {Command, CommandAuthenticated, XCom, XComAuthenticated, XComClient} from "@affinity-lab/x-com";
 
 @XCom("post")
 @XComClient(clients.mobile, [1, 2])

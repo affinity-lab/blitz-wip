@@ -1,5 +1,4 @@
-import {createErrorData, preprocessErrorTree} from "../lib/util/extended-error/preprocess-error-tree";
-
+import {createErrorData, preprocessErrorTree} from "@affinity-lab/affinity-util";
 
 export const appError = {
 	auth: {

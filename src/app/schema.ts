@@ -1,6 +1,6 @@
 import {char, int, mysqlTable, serial, varchar, timestamp, json, text} from "drizzle-orm/mysql-core";
 import {relations} from "drizzle-orm";
-import {storageSchemaFactory} from "../lib/blitz/storage/storage-schema-factory";
+import {storageSchemaFactory} from "@affinity-lab/blitz";
 
 export const post = mysqlTable("posts", {
 	id: serial("id").primaryKey(),

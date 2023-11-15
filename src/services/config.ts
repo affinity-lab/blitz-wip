@@ -1,4 +1,4 @@
-import {Env} from "../lib/util/env";
+import {Env} from "@affinity-lab/affinity-util";
 
 
 class ConfigService {

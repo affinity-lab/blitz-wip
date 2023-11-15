@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import express, {Request} from "express";
-import {extendExpressRequest} from "./lib/x-com/extend-express-request";
 import cors from "cors";
 import "express-async-errors";
 import cfg from "./services/config";
@@ -12,10 +11,9 @@ import * as schema from "./app/schema";
 import {migrate} from "drizzle-orm/mysql2/migrator";
 import multer from "multer";
 import {eventEmitter} from "./services/event-emitter";
-import {XCOM_API_EVENTS} from "./lib/x-com/events";
-import {Jwt} from "./lib/util/jwt";
-import {XERROR} from "./lib/util/extended-error/events";
-import {exceptionHandler} from "./lib/util/extended-error/express-exception-handler";
+import {extendExpressRequest, XCOM_API_EVENTS} from "@affinity-lab/x-com";
+import {exceptionHandler, Jwt, XERROR} from "@affinity-lab/affinity-util";
+
 
 /* Wrap the whole process into a async function */
 (async () => {

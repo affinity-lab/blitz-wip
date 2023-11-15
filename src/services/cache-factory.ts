@@ -1,6 +1,5 @@
 import NodeCache from "node-cache";
-import Cache from "../lib/util/cache/cache";
-import CacheWithNodeCache from "../lib/util/cache/cache-with-node-cache";
+import {Cache, CacheWithNodeCache} from "@affinity-lab/affinity-util";
 
 
 const cache = new NodeCache();

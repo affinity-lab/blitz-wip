@@ -4,14 +4,8 @@ import {Request} from "express";
 import {passwordService} from "../services/password-service";
 import crypto from "crypto";
 import {appError} from "../app/errors";
-import {CommandPreprocessArgs} from "../lib/x-com/decorators/command/command-preprocess-args";
-import {CommandValidateZod} from "../lib/x-com/decorators/command/command-validate-zod";
 import {z} from "zod";
-import {Files} from "../lib/x-com/types";
-import {tmpFile} from "../services/tmp-file";
-import {XCom} from "../lib/x-com/decorators/api/x-com";
-import {CommandClient} from "../lib/x-com/decorators/command/command-client";
-import {Command} from "../lib/x-com/decorators/command/command";
+import {Command, CommandClient, CommandPreprocessArgs, CommandValidateZod, Files, XCom} from "@affinity-lab/x-com";
 
 const fv = {
 	user: {
@@ -27,7 +21,7 @@ export default class UserXCom {
 	@Command()
 	@CommandClient(clients.mobile, 1)
 	async doesExist(args: { email: string }): Promise<boolean> {
-		return repository.user.getByEmail(args.email).then(r => !!r);
+		return repository.user.getByEmail(args.email).then((r: any) => !!r);
 	}
 
 
@@ -45,7 +39,7 @@ export default class UserXCom {
 	@Command("doesExists")
 	@CommandClient(clients.mobile, 2)
 	async doesExist2(args: { email: string }): Promise<boolean> {
-		return repository.user.getByEmail(args.email).then(r => !!r);
+		return repository.user.getByEmail(args.email).then((r: any) => !!r);
 	}
 
 	@Command("create")

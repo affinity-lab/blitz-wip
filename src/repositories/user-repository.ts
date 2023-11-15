@@ -1,10 +1,8 @@
 import {and, eq, sql} from "drizzle-orm";
-import MySqlRepository from "../lib/blitz/repository/my-sql-repository";
 import * as schema from "../app/schema";
 import {passwordService} from "../services/password-service";
 import {SchemaType} from "../app/schema-type";
-import {DocumentCollection} from "../lib/blitz/storage/collections/document";
-import {ImageCollection} from "../lib/blitz/storage/collections/image";
+import {DocumentCollection, ImageCollection, MySqlRepository} from "@affinity-lab/blitz";
 
 export class UserRepository extends MySqlRepository<SchemaType, typeof schema.user> {
 
@@ -25,6 +23,6 @@ export class UserRepository extends MySqlRepository<SchemaType, typeof schema.us
 		return this.queries.auth.execute({email, password: await passwordService.hash(pw)});
 	}
 
-	images: DocumentCollection = ImageCollection.factory(this, "images", {limit: 3, size: 1024 * 1024});
+	images: ImageCollection = ImageCollection.factory(this, "images", {limit: 3, size: 1024 * 1024});
 	documents = DocumentCollection.factory(this, "documents", {limit: 3, size: 1024 * 1024});
 }

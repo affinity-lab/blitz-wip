@@ -6,6 +6,7 @@ import cacheFactory from "../services/cache-factory";
 import {InferSelectModel} from "drizzle-orm";
 import {VerificationRepository} from "../repositories/verification-repository";
 import {eventEmitter} from "../services/event-emitter";
+import {collectionStorage} from "../services/collection-storage";
 
 
 const repository = {
@@ -13,20 +14,23 @@ const repository = {
 		schema.user,
 		db,
 		eventEmitter,
+		collectionStorage,
 		cacheFactory<InferSelectModel<typeof schema.user>>(10),
-		cacheFactory<any>(30),
+		cacheFactory<any>(30)
 	),
 	post: new PostRepository(
 		schema.post,
 		db,
 		eventEmitter,
+		collectionStorage,
 		cacheFactory<InferSelectModel<typeof schema.post>>(10),
 		cacheFactory<any>(30)
 	),
 	verification: new VerificationRepository(
 		schema.verification,
 		db,
-		eventEmitter
+		eventEmitter,
+		collectionStorage
 	)
 };
 
