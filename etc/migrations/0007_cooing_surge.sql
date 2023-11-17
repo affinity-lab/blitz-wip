@@ -1,1 +1,0 @@
-ALTER TABLE `_storage` ADD CONSTRAINT `_storage_name_itemId_unique` UNIQUE(`name`,`itemId`);

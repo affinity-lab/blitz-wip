@@ -13,8 +13,9 @@ export class VerificationRepository extends MySqlRepository<SchemaType, typeof s
 		}).prepare()
 	};
 
-	verify(code: string, email: string): Promise<boolean> {
-		return this.queries.verify.execute({email, code}).then(r => !!r);
+	async verify(code: string, email: string): Promise<boolean> {
+		const r = await this.queries.verify.execute({email, code});
+		return !!r;
 	}
 }
 

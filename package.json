@@ -51,7 +51,7 @@
 		"@types/module-alias": "^2.0.4",
 		"@types/multer": "^1.4.10",
 		"@types/node": "^18.18.9",
-		"drizzle-kit": "^0.19.13",
+		"drizzle-kit": "^0.20.2",
 		"nodemon": "^3.0.1",
 		"ts-node": "^10.9.1",
 		"tsx": "^3.14.0",

@@ -1,30 +1,31 @@
-import {char, int, mysqlTable, serial, varchar, timestamp, json, text} from "drizzle-orm/mysql-core";
-import {relations} from "drizzle-orm";
-import {storageSchemaFactory} from "@affinity-lab/blitz";
+import {char, int, mysqlTable, serial, text, timestamp, varchar} from "drizzle-orm/mysql-core";
+import {id, storageSchemaFactory} from "@affinity-lab/blitz";
+import "drizzle-orm";
+
+
+export const user = mysqlTable("users", {
+	id: id(),
+	name: varchar("name", {length: 255}),
+	email: varchar("email", {length: 255}),
+	password: char("password", {length: 255}),
+	postId: int("postId"),
+	bossId: int("bossId")
+});
+
 
 export const post = mysqlTable("posts", {
-	id: serial("id").primaryKey(),
+	id: id(),
 	title: varchar("title", {length: 255}),
 	authorId: int("authorId"),
 	body: text("body")
-})
+});
 
-export const postRelations = relations(post, ({ one }) => ({author: one(user, {fields: [post.authorId], references: [user.id]})}))
-
-export const user = mysqlTable("users", {
-	id: serial("id").primaryKey(),
-	name: varchar("name", {length: 255}),
-	email: varchar("email", {length: 255}),
-	password: char("password", {length: 255})
-})
-
-export const userRelations = relations(user, ({ many }) => ({posts: many(post)}))
 
 export const verification = mysqlTable("verification", {
 	id: serial("id").primaryKey(),
 	email: varchar("email", {length: 255}),
 	code: varchar("code", {length: 36}),
 	created: timestamp("created").defaultNow()
-})
+});
 
 export const storage = storageSchemaFactory();

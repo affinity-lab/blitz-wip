@@ -1,1 +1,0 @@
-ALTER TABLE `verification` MODIFY COLUMN `code` varchar(36);
