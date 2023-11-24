@@ -5,7 +5,6 @@ import {eventEmitter} from "./event-emitter";
 import {collectionStorage} from "./collection-storage";
 import cacheFactory from "./cache-factory";
 import {InferSelectModel} from "drizzle-orm";
-import {undefined} from "zod";
 
 export function repositoryFactory<T extends MySqlRepository>(repository: new (...args: any[]) => T, schema: MySqlTableWithColumns<any>, storeTTL?: number, cacheTTL?: number): T {
 	return new repository(
@@ -13,7 +12,7 @@ export function repositoryFactory<T extends MySqlRepository>(repository: new (..
 		db,
 		eventEmitter,
 		collectionStorage,
-		storeTTL ? cacheFactory<InferSelectModel<typeof schema>>(storeTTL) : undefined,
-		cacheTTL ? cacheFactory<any>(cacheTTL) : undefined
+		storeTTL !== undefined ? cacheFactory<InferSelectModel<typeof schema>>(storeTTL) : undefined,
+		cacheTTL !== undefined ? cacheFactory<any>(cacheTTL) : undefined
 	);
 }

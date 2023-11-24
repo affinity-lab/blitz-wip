@@ -6,40 +6,41 @@ import crypto from "crypto";
 import {appError} from "../app/errors";
 import {z} from "zod";
 import {Command, CommandClient, CommandPreprocessArgs, CommandValidateZod, Files, XCom} from "@affinity-lab/x-com";
+import * as console from "console";
+import {tmpFile} from "../services/tmp-file";
 
 const fv = {
 	user: {
-		name: z.string().trim(),
+		name: z.string().trim().min(5),
 		password: z.string().trim(),
 		phone: z.string().trim().length(9).optional()
 	}
 };
+
+type bool = boolean;
 
 @XCom("user")
 export default class UserXCom {
 
 	@Command()
 	@CommandClient(clients.mobile, 1)
-	async doesExist(args: { email: string }): Promise<boolean> {
+	async doesExist(args: { email: string }): Promise<bool> {
 		return repository.user.getByEmail(args.email).then((r: any) => !!r);
 	}
 
 
 	@Command("upload")
 	@CommandClient(clients.mobile, 1)
+	@CommandValidateZod(z.object({id: z.number({coerce: true})}))
 	async upload(args: { id: number }, req: Request, files: Files): Promise<void> {
-		const user = repository.user.get(args.id);
-		repository.post.get(args.id);
-		// const file = tmpFile(files["file"][0].name, files["file"][0].buffer);
-		// await repository.user.documents.add(args.id, file);
-		// await repository.user.documents.setTitle(args.id, files["file"].at(-1)!.name, "FASZOMT");
-		// await repository.user.delete(1);
+		const file = tmpFile(files["file"][0]);
+		await repository.user.images.add(args.id, file);
 	}
 
 	@Command("doesExists")
 	@CommandClient(clients.mobile, 2)
-	async doesExist2(args: { email: string }): Promise<boolean> {
-		return repository.user.getByEmail(args.email).then((r: any) => !!r);
+	async get(args: { id: number }) {
+		return repository.user.get(args.id);
 	}
 
 	@Command("create")

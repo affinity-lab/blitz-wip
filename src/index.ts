@@ -13,6 +13,8 @@ import multer from "multer";
 import {eventEmitter} from "./services/event-emitter";
 import {extendExpressRequest, XCOM_API_EVENTS} from "@affinity-lab/x-com";
 import {exceptionHandler, Jwt, XERROR} from "@affinity-lab/affinity-util";
+import {downloadRoute} from "./lib/download/download-route";
+import {imgRoute} from "./lib/img/imgRoute";
 
 
 /* Wrap the whole process into a async function */
@@ -48,8 +50,25 @@ import {exceptionHandler, Jwt, XERROR} from "@affinity-lab/affinity-util";
 			res
 		);
 	});
+
+	/* Add static file server*/
+	app.use("/static", express.static(cfg.static.path, {maxAge: cfg.static.maxAge}));
+
+	/* Add storage download */
+	downloadRoute(app, "/files", cfg.storage.path, cfg.storage.maxAge,
+		{
+			"users.images": (id: number, file: string) => {
+				console.log(id, file);
+				return false;
+			}
+		}
+	);
+	imgRoute(app, "/img", cfg.storage.img.path, cfg.storage.path, cfg.storage.img.maxAge);
+
+
 	/* Add exception handler to catch all exceptions*/
 	app.use(exceptionHandler(eventEmitter));
-	/* Start the x-com */
+
+	/* Start the server */
 	app.listen(cfg.serverPort, () => console.log(`Example app listening on port http://localhost:${cfg.serverPort}`));
 })();

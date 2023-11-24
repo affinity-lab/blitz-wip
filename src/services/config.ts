@@ -12,9 +12,18 @@ class ConfigService {
 			env: env,
 			environment: {name: env.environment, isTest, isDev, isProd},
 			serverPort: env.int("PORT", 3000),
+			static: {
+				path: env.sub("STATIC").path("PATH"),
+				maxAge: env.sub("STATIC").int("MAX-AGE") * 1000
+			},
 			storage: {
-				path: env.sub("STORAGE").string("PATH"),
-				tmp: env.sub("STORAGE").string("TMP")
+				path: env.sub("STORAGE").path("PATH"),
+				tmp: env.sub("STORAGE").path("TMP"),
+				maxAge: env.sub("STORAGE").int("FILE-MAX-AGE"),
+				img: {
+					maxAge: env.sub("STORAGE").int("IMG-MAX-AGE"),
+					path: env.sub("STORAGE").path("IMG-PATH")
+				}
 			},
 			database: {
 				url: env.sub("DB").string("DATABASE_URL"),
