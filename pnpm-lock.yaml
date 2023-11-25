@@ -10,7 +10,7 @@ dependencies:
     version: github.com/affinity-lab/affinity-util/915dba1a9bc3301c4e35ff69023e186dd3da395a
   '@affinity-lab/blitz':
     specifier: github:affinity-lab/blitz
-    version: github.com/affinity-lab/blitz/e7ef1838e07f46253d357e3329cd74aa3ac97949
+    version: github.com/affinity-lab/blitz/0b111a47600fc701f27321ea9db01da5e68a1f45
   '@affinity-lab/x-com':
     specifier: github:affinity-lab/x-com
     version: github.com/affinity-lab/x-com/1190b92135d45280f6f30830667546971b6551a6
@@ -3338,13 +3338,14 @@ packages:
       - supports-color
     dev: false
 
-  github.com/affinity-lab/blitz/e7ef1838e07f46253d357e3329cd74aa3ac97949:
-    resolution: {tarball: https://codeload.github.com/affinity-lab/blitz/tar.gz/e7ef1838e07f46253d357e3329cd74aa3ac97949}
+  github.com/affinity-lab/blitz/0b111a47600fc701f27321ea9db01da5e68a1f45:
+    resolution: {tarball: https://codeload.github.com/affinity-lab/blitz/tar.gz/0b111a47600fc701f27321ea9db01da5e68a1f45}
     name: '@affinity-lab/blitz'
-    version: 0.0.7
+    version: 0.0.9
     dependencies:
       '@affinity-lab/affinity-util': github.com/affinity-lab/affinity-util/915dba1a9bc3301c4e35ff69023e186dd3da395a
       drizzle-orm: 0.29.0(mysql2@3.6.3)
+      express: 4.18.2
       mysql2: 3.6.3
       sharp: 0.32.6
     transitivePeerDependencies:
