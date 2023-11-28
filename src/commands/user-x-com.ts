@@ -7,7 +7,7 @@ import {appError} from "../app/errors";
 import {z} from "zod";
 import {Command, CommandClient, CommandPreprocessArgs, CommandValidateZod, Files, XCom} from "@affinity-lab/x-com";
 import * as console from "console";
-import {tmpFile} from "../services/tmp-file";
+import {user} from "../app/schema";
 
 const fv = {
 	user: {
@@ -32,15 +32,23 @@ export default class UserXCom {
 	@Command("upload")
 	@CommandClient(clients.mobile, 1)
 	@CommandValidateZod(z.object({id: z.number({coerce: true})}))
-	async upload(args: { id: number }, req: Request, files: Files): Promise<void> {
-		const file = tmpFile(files["file"][0]);
-		await repository.user.images.add(args.id, file);
+	async upload(args: { id: number, b: { a: string, b?: number, c: string[], d: Array<{ name: string | undefined }> } }, req: Request, {file, avatar}: Files): Promise<void> {
+		// const file = tmpFile(files["file"][0]);
+		// await repository.user.images.add(args.id, file);
+		await repository.user.documents.delete(args.id, file[0].name);
+	}
+
+
+	@Command("all")
+	@CommandClient(clients.mobile, 2)
+	async all() {
+		return true;
 	}
 
 	@Command("doesExists")
 	@CommandClient(clients.mobile, 2)
-	async get(args: { id: number }) {
-		return repository.user.get(args.id);
+	async get(args: { id: number | null }) {
+		return repository.user.get(args.id!);
 	}
 
 	@Command("create")
@@ -50,7 +58,7 @@ export default class UserXCom {
 	})
 	@CommandValidateZod(z.object({name: z.string().length(3)}))
 	@CommandClient(clients.mobile, [1, 2])
-	async createUser(args: { name: string, email: string, password: string, verificationCode: string }) {
+	async createUser(args: { name: string | null, email: string, password: string, verificationCode: string }) {
 		if (await repository.verification.verify(args.verificationCode, args.email)) {
 			return repository.user.insert({name: args.name, email: args.email, password: await passwordService.hash(args.password)});
 		}

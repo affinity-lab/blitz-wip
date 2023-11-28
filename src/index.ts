@@ -11,10 +11,11 @@ import * as schema from "./app/schema";
 import {migrate} from "drizzle-orm/mysql2/migrator";
 import multer from "multer";
 import {eventEmitter} from "./services/event-emitter";
-import {extendExpressRequest, XCOM_API_EVENTS} from "@affinity-lab/x-com";
+import {apiGen, extendExpressRequest, XCOM_API_EVENTS} from "@affinity-lab/x-com";
 import {exceptionHandler, Jwt, XERROR} from "@affinity-lab/affinity-util";
-import {storageFileServer, storageImgServer} from "@affinity-lab/blitz";
-
+import {imgEventListeners, storageFileServer, storageImgServer} from "@affinity-lab/blitz";
+import path from "path";
+import * as process from "process";
 
 /* Wrap the whole process into a async function */
 (async () => {
@@ -26,6 +27,7 @@ import {storageFileServer, storageImgServer} from "@affinity-lab/blitz";
 		XERROR.ERROR,
 		(error: any, req: Request) => logger?.error(`${req.id}: ${error}`)
 	);
+	imgEventListeners(cfg.storage.img.path, eventEmitter);
 
 	/* Create a database connection, and store the reference in the STORAGE object */
 	STORAGE["db"] = drizzle(await mysql.createConnection(cfg.database.url), {mode: "default", schema, logger: true});
@@ -39,12 +41,19 @@ import {storageFileServer, storageImgServer} from "@affinity-lab/blitz";
 	app.use(express.json()); // enable json
 	app.use(multer().any()); // enable json
 
+	const resolver = require("./app/command-resolver").default;
+
 	/* Add /api endpoint with the commandResolver */
 	app.post("/api/:app/:version/:cmd", async (req, res) => {
 		const {app, version, cmd} = req.params;
-		await require("./app/command-resolver").default.handle(app, parseInt(version), cmd, req, res);
+		await resolver.handle(app, parseInt(version), cmd, req, res);
 	});
 
+	/* Generate api clients*/
+	if(cfg.env.environment === "DEV"){
+		apiGen(path.join(process.cwd(), "src/**/*.ts"), resolver, "etc/api");
+		app.use("/api-client", express.static("etc/api"));
+	}
 	/* Add static file server*/
 	app.use("/static", express.static(cfg.static.path, {maxAge: cfg.static.maxAge}));
 	/* Add storage file server */

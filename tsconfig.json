@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"strict": true,
+		"exactOptionalPropertyTypes": true,
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
@@ -21,7 +22,7 @@
 		"lib": ["ESNext", "esnext.asynciterable"],
 		"skipLibCheck": true,
 		"typeRoots": ["./src/@types", "./node_modules/@types"],
-		"baseUrl": ".",
+		"baseUrl": "."
 	},
 	"include": [
 		"src/**/*.ts"
