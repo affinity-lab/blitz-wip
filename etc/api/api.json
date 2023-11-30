@@ -1,0 +1,108 @@
+{
+  "mobile": {
+    "1": {
+      "post.get": {
+        "class": "PostXCom",
+        "func": "get",
+        "authenticated": true,
+        "types": {
+          "args": "{ id: number; }",
+          "files": "",
+          "ret": "Promise<{ post: { id: number; title: string | null; authorId: number | null; body: string | null; } | undefined; author: { id: number; name: string | null; email: string | null; password: string | null; postId: number | null; bossId: number | null; } | undefined; }>"
+        }
+      },
+      "user.doesExist": {
+        "class": "UserXCom",
+        "func": "doesExist",
+        "authenticated": false,
+        "types": {
+          "args": "{ email: string; }",
+          "files": "",
+          "ret": "Promise<boolean>"
+        }
+      },
+      "user.upload": {
+        "class": "UserXCom",
+        "func": "upload",
+        "authenticated": false,
+        "types": {
+          "args": "{ id: number; b: { a: string; b?: number | undefined; c: string[]; d: { name: string | undefined; }[]; }; }",
+          "files": "{file, avatar}",
+          "ret": "Promise<void>"
+        }
+      },
+      "user.create": {
+        "class": "UserXCom",
+        "func": "createUser",
+        "authenticated": false,
+        "types": {
+          "args": "{ name: string | null; email: string; password: string; verificationCode: string; }",
+          "files": "",
+          "ret": "Promise<number | undefined>"
+        }
+      },
+      "user.createVerification": {
+        "class": "UserXCom",
+        "func": "createVerification",
+        "authenticated": false,
+        "types": {
+          "args": "{ email: string; }",
+          "files": "",
+          "ret": "Promise<boolean>"
+        }
+      },
+      "user.login": {
+        "class": "UserXCom",
+        "func": "login",
+        "authenticated": false,
+        "types": {
+          "args": "{ name: string; password: string; }",
+          "files": "",
+          "ret": "Promise<string | undefined>"
+        }
+      }
+    },
+    "2": {
+      "post.get": {
+        "class": "PostXCom",
+        "func": "get",
+        "authenticated": true,
+        "types": {
+          "args": "{ id: number; }",
+          "files": "",
+          "ret": "Promise<{ post: { id: number; title: string | null; authorId: number | null; body: string | null; } | undefined; author: { id: number; name: string | null; email: string | null; password: string | null; postId: number | null; bossId: number | null; } | undefined; }>"
+        }
+      },
+      "user.all": {
+        "class": "UserXCom",
+        "func": "all",
+        "authenticated": false,
+        "types": {
+          "args": "",
+          "files": "",
+          "ret": "Promise<boolean>"
+        }
+      },
+      "user.doesExists": {
+        "class": "UserXCom",
+        "func": "get",
+        "authenticated": false,
+        "types": {
+          "args": "{ id: number | null; }",
+          "files": "",
+          "ret": "Promise<{ id: number; name: string | null; email: string | null; password: string | null; postId: number | null; bossId: number | null; } | undefined>"
+        }
+      },
+      "user.create": {
+        "class": "UserXCom",
+        "func": "createUser",
+        "authenticated": false,
+        "types": {
+          "args": "{ name: string | null; email: string; password: string; verificationCode: string; }",
+          "files": "",
+          "ret": "Promise<number | undefined>"
+        }
+      }
+    }
+  }
+}

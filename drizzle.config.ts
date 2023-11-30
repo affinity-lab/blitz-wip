@@ -7,6 +7,6 @@ export default {
     out: cfg.database.migration,
     driver: "mysql2",
     dbCredentials: {
-        connectionString: cfg.database.url
+        uri: cfg.database.url
     }
 } satisfies Config;

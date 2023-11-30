@@ -12,5 +12,4 @@ export function tmpFile(name: string | FileField, buffer?: Buffer) {
 		buffer = file.buffer;
 	}
 	return new TmpFile(cfg.storage.tmp, name, buffer!);
-
 }

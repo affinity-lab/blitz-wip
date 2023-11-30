@@ -28,7 +28,8 @@ class ConfigService {
 			database: {
 				url: env.sub("DB").string("DATABASE_URL"),
 				migration: env.sub("DB").string("MIGRATION_FOLDER"),
-				schema: env.sub("DB").string("SCHEMA")
+				schema: env.sub("DB").string("SCHEMA"),
+				log: env.sub("DB").boolean("LOG")
 			},
 			crypto: {
 				passwordPepper: Buffer.from(env.string("PASSWORD_PEPPER"))
